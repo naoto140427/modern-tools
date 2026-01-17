@@ -1,0 +1,15 @@
+{
+  "Metadata": {
+    "title": "ModernTools - Focus on Creation",
+    "description": "The ultimate workspace for creators. Convert, optimize, and create with AI-powered tools."
+  },
+  "Hero": {
+    "title": "Focus on Creation.",
+    "subtitle": "We handle the rest.",
+    "searchPlaceholder": "Drop files or type commands...",
+    "features": {
+      "traffic": "Saved Traffic",
+      "ai": "Local AI"
+    }
+  }
+}

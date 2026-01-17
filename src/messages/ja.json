@@ -1,0 +1,15 @@
+{
+  "Metadata": {
+    "title": "ModernTools - 創造に集中しよう",
+    "description": "クリエイターのための究極のワークスペース。AI駆動のツールで、変換も最適化も一瞬で。"
+  },
+  "Hero": {
+    "title": "創造に集中しよう。",
+    "subtitle": "あとはAIがやります。",
+    "searchPlaceholder": "ファイルをドロップ、またはコマンド入力...",
+    "features": {
+      "traffic": "節約データ量",
+      "ai": "ローカルAI"
+    }
+  }
+}
