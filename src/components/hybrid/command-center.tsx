@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, Trash2, FileText, Merge, Settings2, X, QrCode, Youtube, FileType, RefreshCw, Monitor, CheckCircle2, BookOpen } from "lucide-react"; // 👈 BookOpen追加
+import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, Trash2, FileText, Merge, Settings2, X, QrCode, Youtube, FileType, RefreshCw, Monitor, CheckCircle2, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDropzone } from "react-dropzone";
 import { convertToWebP, formatBytes, OutputFormat } from "@/lib/converter";
@@ -13,7 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import JSZip from "jszip";
 import QRCode from "qrcode";
 import { Toaster, toast } from "sonner";
-import { useRouter } from "next/navigation"; // 👈 追加
+import { useRouter } from "next/navigation";
 
 type Mode = "image" | "pdf" | "qr" | "youtube" | null;
 
@@ -28,7 +28,7 @@ type ConversionResult = {
 
 // コマンドメニュー定義
 const COMMANDS = [
-  { id: "docs", label: "Open Documentation", icon: BookOpen, shortcut: "" }, // 👈 ドキュメントへのリンク
+  { id: "docs", label: "Open Documentation", icon: BookOpen, shortcut: "" },
   { id: "clear", label: "Reset / Clear All", icon: RefreshCw, shortcut: "Esc" },
   { id: "settings", label: "Toggle Settings", icon: Settings2, shortcut: "S" },
   { id: "format_webp", label: "Set Output to WebP", icon: FileType, shortcut: "" },
@@ -38,7 +38,7 @@ const COMMANDS = [
 
 export function CommandCenter() {
   const t = useTranslations("Hero");
-  const router = useRouter(); // 👈 ルーター初期化
+  const router = useRouter();
   const [inputValue, setInputValue] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [mode, setMode] = useState<Mode>(null);
@@ -93,7 +93,7 @@ export function CommandCenter() {
 
     setTimeout(() => {
       switch (id) {
-        case "docs": // 👈 ドキュメントページへ移動
+        case "docs":
           router.push("/docs");
           break;
         case "clear":
@@ -231,11 +231,16 @@ export function CommandCenter() {
     toast.success("ZIP Downloaded!");
   }, [imageResults]);
 
+  // 👇 ここを修正しました（MIMEタイプを指定）
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     noClick: true,
     noKeyboard: true,
-    accept: { 'image/*': [], 'application/pdf': [], '.heic': [] },
+    accept: { 
+      'image/*': [], 
+      'application/pdf': [], 
+      'image/heic': ['.heic']  // 👈 正しい記述
+    },
     multiple: true
   });
 
