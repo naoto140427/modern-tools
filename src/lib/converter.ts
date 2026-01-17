@@ -1,11 +1,11 @@
-export async function convertToWebP(file: File): Promise<{ blob: Blob; url: string; originalSize: number; newSize: number }> {
+// quality引数 (0.1 〜 1.0) を追加
+export async function convertToWebP(file: File, quality: number = 0.8): Promise<{ blob: Blob; url: string; originalSize: number; newSize: number }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
     reader.onload = (event) => {
       const img = new Image();
       img.onload = () => {
-        // キャンバスを作成（ここに描画して変換する）
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
@@ -16,10 +16,9 @@ export async function convertToWebP(file: File): Promise<{ blob: Blob; url: stri
           return;
         }
         
-        // 画像を描画
         ctx.drawImage(img, 0, 0);
         
-        // WebP形式で書き出し (品質 0.8 = 80%)
+        // ここで指定された quality を使う！
         canvas.toBlob(
           (blob) => {
             if (!blob) {
@@ -35,7 +34,7 @@ export async function convertToWebP(file: File): Promise<{ blob: Blob; url: stri
             });
           },
           'image/webp',
-          0.8
+          quality // 👈 ここ！
         );
       };
       
@@ -47,7 +46,6 @@ export async function convertToWebP(file: File): Promise<{ blob: Blob; url: stri
   });
 }
 
-// ファイルサイズを人間が読みやすい形式にする関数 (例: 1024 -> 1KB)
 export function formatBytes(bytes: number, decimals = 2) {
   if (!+bytes) return '0 Bytes';
   const k = 1024;
