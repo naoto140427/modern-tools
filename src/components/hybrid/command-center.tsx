@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, Trash2, FileText, Merge, Settings2, X, QrCode, Youtube, FileType, RefreshCw, Monitor, CheckCircle2 } from "lucide-react";
+import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, Trash2, FileText, Merge, Settings2, X, QrCode, Youtube, FileType, RefreshCw, Monitor, CheckCircle2, BookOpen } from "lucide-react"; // 👈 BookOpen追加
 import { cn } from "@/lib/utils";
 import { useDropzone } from "react-dropzone";
 import { convertToWebP, formatBytes, OutputFormat } from "@/lib/converter";
@@ -13,6 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import JSZip from "jszip";
 import QRCode from "qrcode";
 import { Toaster, toast } from "sonner";
+import { useRouter } from "next/navigation"; // 👈 追加
 
 type Mode = "image" | "pdf" | "qr" | "youtube" | null;
 
@@ -25,7 +26,9 @@ type ConversionResult = {
   newSize: number;
 };
 
+// コマンドメニュー定義
 const COMMANDS = [
+  { id: "docs", label: "Open Documentation", icon: BookOpen, shortcut: "" }, // 👈 ドキュメントへのリンク
   { id: "clear", label: "Reset / Clear All", icon: RefreshCw, shortcut: "Esc" },
   { id: "settings", label: "Toggle Settings", icon: Settings2, shortcut: "S" },
   { id: "format_webp", label: "Set Output to WebP", icon: FileType, shortcut: "" },
@@ -35,6 +38,7 @@ const COMMANDS = [
 
 export function CommandCenter() {
   const t = useTranslations("Hero");
+  const router = useRouter(); // 👈 ルーター初期化
   const [inputValue, setInputValue] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [mode, setMode] = useState<Mode>(null);
@@ -89,6 +93,9 @@ export function CommandCenter() {
 
     setTimeout(() => {
       switch (id) {
+        case "docs": // 👈 ドキュメントページへ移動
+          router.push("/docs");
+          break;
         case "clear":
           handleClear();
           toast("Reset complete", { icon: <RefreshCw className="w-4 h-4" /> });
@@ -369,7 +376,7 @@ export function CommandCenter() {
                   />
                 </div>
                 
-                {/* 👇 新しく追加したバージョン表示エリア */}
+                {/* バージョン表示 */}
                 <div className="w-full h-px bg-white/10" />
                 <div className="flex justify-center pt-2">
                   <span className="text-[10px] text-neutral-600 font-mono tracking-widest opacity-50">
