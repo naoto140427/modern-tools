@@ -1,4 +1,4 @@
-import heic2any from "heic2any";
+// import heic2any from "heic2any";  <-- これを削除して、下で動的に読み込みます
 
 export type OutputFormat = "image/webp" | "image/jpeg" | "image/png";
 
@@ -15,21 +15,23 @@ function getExtension(mimeType: string): string {
 export async function convertToWebP(
   file: File, 
   quality: number = 0.8,
-  targetFormat: OutputFormat = "image/webp" // 👈 出力形式を選べるように
+  targetFormat: OutputFormat = "image/webp"
 ): Promise<{ blob: Blob; url: string; originalSize: number; newSize: number }> {
   
   return new Promise(async (resolve, reject) => {
     let sourceBlob: Blob = file;
 
-    // 🍏 HEICの場合、まずJPGっぽいBlobに変換してから処理する
+    // 🍏 HEICの場合、ここで動的にライブラリを読み込む！（サーバーでのエラー回避）
     if (file.name.toLowerCase().endsWith(".heic") || file.type === "image/heic") {
       try {
+        // 👇 ここが修正ポイント！使う直前に読み込む
+        const heic2any = (await import("heic2any")).default;
+        
         const result = await heic2any({
           blob: file,
-          toType: "image/jpeg", // 一旦JPEGとして扱う
+          toType: "image/jpeg",
           quality: 1.0
         });
-        // heic2anyは単体Blobか配列を返すが、今回は単体として扱う
         sourceBlob = Array.isArray(result) ? result[0] : result;
       } catch (e) {
         console.error("HEIC conversion failed", e);
@@ -53,7 +55,7 @@ export async function convertToWebP(
           return;
         }
         
-        // PNG以外（JPG/WebP）の場合、背景を白く塗る（透過対策）
+        // PNG以外の場合、背景を白く塗る
         if (targetFormat !== "image/png") {
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -75,7 +77,7 @@ export async function convertToWebP(
               newSize: blob.size
             });
           },
-          targetFormat, // 👈 ここで指定したフォーマットになる
+          targetFormat,
           quality
         );
       };

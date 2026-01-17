@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import JSZip from "jszip";
 import QRCode from "qrcode";
-import { Toaster, toast } from "sonner"; // 👈 通知用
+import { Toaster, toast } from "sonner";
 
 type Mode = "image" | "pdf" | "qr" | "youtube" | null;
 
@@ -73,7 +73,6 @@ export function CommandCenter() {
           setSelectedIndex((prev) => (prev - 1 + COMMANDS.length) % COMMANDS.length);
         } else if (e.key === "Enter") {
           e.preventDefault();
-          // 少し遅延させて実行（クリック時の挙動と合わせる）
           setTimeout(() => executeCommand(COMMANDS[selectedIndex].id), 50);
         } else if (e.key === "Escape") {
           e.preventDefault();
@@ -86,9 +85,8 @@ export function CommandCenter() {
   }, [showCommandPalette, selectedIndex]);
 
   const executeCommand = (id: string) => {
-    setShowCommandPalette(false); // 先に閉じる
+    setShowCommandPalette(false);
 
-    // 少し待ってから実行（アニメーションと被らないように）
     setTimeout(() => {
       switch (id) {
         case "clear":
@@ -97,7 +95,6 @@ export function CommandCenter() {
           break;
         case "settings":
           setShowSettings((prev) => !prev);
-          // トーストは出さない（パネルが開くのがフィードバックだから）
           break;
         case "format_webp":
           setTargetFormat("image/webp");
@@ -331,7 +328,7 @@ export function CommandCenter() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="absolute top-16 right-4 left-4 sm:left-auto sm:w-64 bg-[#111] border border-white/10 rounded-2xl p-4 z-40 shadow-xl overflow-hidden" // 👈 z-40に強化！
+              className="absolute top-16 right-4 left-4 sm:left-auto sm:w-64 bg-[#111] border border-white/10 rounded-2xl p-4 z-40 shadow-xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="space-y-6">
@@ -371,13 +368,20 @@ export function CommandCenter() {
                     className="py-2"
                   />
                 </div>
+                
+                {/* 👇 新しく追加したバージョン表示エリア */}
+                <div className="w-full h-px bg-white/10" />
+                <div className="flex justify-center pt-2">
+                  <span className="text-[10px] text-neutral-600 font-mono tracking-widest opacity-50">
+                    v{process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}
+                  </span>
+                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center min-h-[400px]">
-          {/* コンテンツ部分は変更なし... */}
           <AnimatePresence mode="wait">
             
             {/* ドラッグ中 */}

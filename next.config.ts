@@ -1,12 +1,29 @@
+import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
-import type { NextConfig } from 'next';
+import withPWAInit from "@ducanh2912/next-pwa"; // 👈 ここを require から import に変更
 
-// i18nの設定ファイルを読み込む
-const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+// 1. PWAの設定
+const withPWA = withPWAInit({
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  swcMinify: true,
+  disable: process.env.NODE_ENV === "development",
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+});
 
+// 2. 多言語化の設定
+const withNextIntl = createNextIntlPlugin();
+
+// 3. 基本設定 ＆ バージョン情報の埋め込み
 const nextConfig: NextConfig = {
-  /* ここに将来設定を追加していきます */
+  env: {
+    NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version || "1.0.0",
+  },
 };
 
-// プラグインを適用してエクスポート
-export default withNextIntl(nextConfig);
+// 4. 全部合体させてエクスポート
+export default withPWA(withNextIntl(nextConfig));
