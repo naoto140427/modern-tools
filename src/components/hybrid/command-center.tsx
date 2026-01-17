@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, Trash2, FileText, Merge, Settings2, X, QrCode, Youtube, FileType, RefreshCw, Monitor } from "lucide-react";
+import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, Trash2, FileText, Merge, Settings2, X, QrCode, Youtube, FileType, RefreshCw, Monitor, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDropzone } from "react-dropzone";
 import { convertToWebP, formatBytes, OutputFormat } from "@/lib/converter";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import JSZip from "jszip";
 import QRCode from "qrcode";
+import { Toaster, toast } from "sonner"; // 👈 通知用
 
 type Mode = "image" | "pdf" | "qr" | "youtube" | null;
 
@@ -24,7 +25,6 @@ type ConversionResult = {
   newSize: number;
 };
 
-// コマンドメニューの項目定義
 const COMMANDS = [
   { id: "clear", label: "Reset / Clear All", icon: RefreshCw, shortcut: "Esc" },
   { id: "settings", label: "Toggle Settings", icon: Settings2, shortcut: "S" },
@@ -44,7 +44,7 @@ export function CommandCenter() {
   const [targetFormat, setTargetFormat] = useState<OutputFormat>("image/webp");
   const [showSettings, setShowSettings] = useState(false);
   
-  // コマンドパレット用ステート
+  // コマンドパレット
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -55,17 +55,15 @@ export function CommandCenter() {
   const [qrBgColor, setQrBgColor] = useState("#ffffff");
   const [youtubeThumb, setYoutubeThumb] = useState<string | null>(null);
 
-  // --- キーボードショートカット監視 (Cmd+K) ---
+  // --- キーボード操作 (Cmd+K) ---
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Cmd + K (Toggle Menu)
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setShowCommandPalette((prev) => !prev);
         setSelectedIndex(0);
       }
       
-      // メニューが開いている時の操作
       if (showCommandPalette) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
@@ -75,41 +73,48 @@ export function CommandCenter() {
           setSelectedIndex((prev) => (prev - 1 + COMMANDS.length) % COMMANDS.length);
         } else if (e.key === "Enter") {
           e.preventDefault();
-          executeCommand(COMMANDS[selectedIndex].id);
+          // 少し遅延させて実行（クリック時の挙動と合わせる）
+          setTimeout(() => executeCommand(COMMANDS[selectedIndex].id), 50);
         } else if (e.key === "Escape") {
           e.preventDefault();
           setShowCommandPalette(false);
         }
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showCommandPalette, selectedIndex]);
 
-  // コマンド実行ロジック
   const executeCommand = (id: string) => {
-    switch (id) {
-      case "clear":
-        handleClear(); // 👈 修正箇所1：引数なしでOK
-        break;
-      case "settings":
-        setShowSettings((prev) => !prev);
-        break;
-      case "format_webp":
-        setTargetFormat("image/webp");
-        break;
-      case "format_jpg":
-        setTargetFormat("image/jpeg");
-        break;
-      case "format_png":
-        setTargetFormat("image/png");
-        break;
-    }
-    setShowCommandPalette(false);
+    setShowCommandPalette(false); // 先に閉じる
+
+    // 少し待ってから実行（アニメーションと被らないように）
+    setTimeout(() => {
+      switch (id) {
+        case "clear":
+          handleClear();
+          toast("Reset complete", { icon: <RefreshCw className="w-4 h-4" /> });
+          break;
+        case "settings":
+          setShowSettings((prev) => !prev);
+          // トーストは出さない（パネルが開くのがフィードバックだから）
+          break;
+        case "format_webp":
+          setTargetFormat("image/webp");
+          toast.success("Output format set to WebP");
+          break;
+        case "format_jpg":
+          setTargetFormat("image/jpeg");
+          toast.success("Output format set to JPG");
+          break;
+        case "format_png":
+          setTargetFormat("image/png");
+          toast.success("Output format set to PNG");
+          break;
+      }
+    }, 100);
   };
 
-  // YouTubeロジック
   const getYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
@@ -151,6 +156,7 @@ export function CommandCenter() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      toast.success("Downloaded!");
     } catch (e) { window.open(url, '_blank'); }
   };
 
@@ -165,7 +171,7 @@ export function CommandCenter() {
     );
     
     if (isMixed) {
-      alert("Please upload only Images OR only PDFs.");
+      toast.error("Please upload only Images OR only PDFs.");
       return;
     }
 
@@ -182,6 +188,7 @@ export function CommandCenter() {
         const { blob, filename, count } = await mergePDFs(acceptedFiles);
         const url = URL.createObjectURL(blob);
         setPdfResult({ url, filename, count });
+        toast.success(`${count} PDFs merged!`);
       } else {
         const conversionPromises = acceptedFiles.map(async (file) => {
           let ext = ".webp";
@@ -197,10 +204,11 @@ export function CommandCenter() {
         });
         const results = await Promise.all(conversionPromises);
         setImageResults(results);
+        toast.success(`${results.length} images converted to ${targetFormat.split("/")[1].toUpperCase().replace("JPEG", "JPG")}`);
       }
     } catch (error) {
       console.error(error);
-      alert("Processing failed. Note: HEIC conversion works best on modern browsers.");
+      toast.error("Processing failed.");
       setMode(null);
     } finally {
       setIsProcessing(false);
@@ -216,6 +224,7 @@ export function CommandCenter() {
     link.href = URL.createObjectURL(content);
     link.download = "converted_images.zip";
     link.click();
+    toast.success("ZIP Downloaded!");
   }, [imageResults]);
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
@@ -226,8 +235,6 @@ export function CommandCenter() {
     multiple: true
   });
 
-  // リセット処理
-  // 👈 修正箇所2：引数を (e?: React.SyntheticEvent) にして、エラー回避
   const handleClear = (e?: React.SyntheticEvent) => {
     if (e) e.stopPropagation();
     setMode(null);
@@ -241,12 +248,15 @@ export function CommandCenter() {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 relative" {...getRootProps()}>
+      {/* 🔔 通知コンポーネント */}
+      <Toaster position="bottom-center" theme="dark" />
+      
       <input {...getInputProps()} />
 
       {/* --- コマンドパレット (Cmd+K) --- */}
       <AnimatePresence>
         {showCommandPalette && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowCommandPalette(false)}>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowCommandPalette(false)}>
              <motion.div 
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
@@ -321,7 +331,7 @@ export function CommandCenter() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="absolute top-16 right-4 left-4 sm:left-auto sm:w-64 bg-[#111] border border-white/10 rounded-2xl p-4 z-20 shadow-xl overflow-hidden"
+              className="absolute top-16 right-4 left-4 sm:left-auto sm:w-64 bg-[#111] border border-white/10 rounded-2xl p-4 z-40 shadow-xl overflow-hidden" // 👈 z-40に強化！
               onClick={(e) => e.stopPropagation()}
             >
               <div className="space-y-6">
@@ -367,6 +377,7 @@ export function CommandCenter() {
         </AnimatePresence>
 
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center min-h-[400px]">
+          {/* コンテンツ部分は変更なし... */}
           <AnimatePresence mode="wait">
             
             {/* ドラッグ中 */}
@@ -537,7 +548,6 @@ export function CommandCenter() {
                       autoFocus={(mode === "qr" || mode === "youtube")}
                     />
                     
-                    {/* 👇 復活した Cmd+K 表示！ */}
                     <div className="hidden sm:flex items-center gap-2 text-xs text-neutral-600 border border-white/10 rounded px-2 py-1 bg-black/20 pointer-events-none">
                       <Command className="h-3 w-3" />
                       <span>K</span>
