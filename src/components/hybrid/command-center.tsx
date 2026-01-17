@@ -3,27 +3,24 @@
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2 } from "lucide-react";
+import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus } from "lucide-react"; // ImagePlusを追加
 import { cn } from "@/lib/utils";
 import { useDropzone } from "react-dropzone";
-import { convertToWebP, formatBytes } from "@/lib/converter"; // 👈 エンジンを読み込み
+import { convertToWebP, formatBytes } from "@/lib/converter";
 import { Button } from "@/components/ui/button";
 
 export function CommandCenter() {
   const t = useTranslations("Hero");
   const [value, setValue] = useState("");
   const [isConverting, setIsConverting] = useState(false);
-  
-  // 変換結果を入れる箱
   const [result, setResult] = useState<{ url: string; originalSize: number; newSize: number; name: string } | null>(null);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
 
-    // 画像以外なら弾く（今回は簡易的に）
     if (!file.type.startsWith("image/")) {
-      alert("Please drop an image file!");
+      alert("Please select an image file!");
       return;
     }
 
@@ -31,15 +28,11 @@ export function CommandCenter() {
     setResult(null);
 
     try {
-      // ⏳ 少し待たせる演出（速すぎるとユーザーが処理を感じられないため）
       await new Promise(resolve => setTimeout(resolve, 800));
-
-      // 🔥 エンジン起動！
       const data = await convertToWebP(file);
-      
       setResult({
         ...data,
-        name: file.name.replace(/\.[^/.]+$/, "") + ".webp" // 拡張子をwebpに変更
+        name: file.name.replace(/\.[^/.]+$/, "") + ".webp"
       });
     } catch (error) {
       console.error(error);
@@ -49,11 +42,12 @@ export function CommandCenter() {
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  // open関数を取り出す
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
-    noClick: true,
+    noClick: true, // 全体のクリックは無効化（検索窓のため）
     noKeyboard: true,
-    accept: { 'image/*': [] } // 画像のみ許可
+    accept: { 'image/*': [] }
   });
 
   return (
@@ -71,10 +65,10 @@ export function CommandCenter() {
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-white/5 via-transparent to-transparent pointer-events-none" />
 
-        <div className="flex flex-col items-center justify-center py-16 px-6 text-center min-h-[400px]">
+        <div className="flex flex-col items-center justify-center py-12 px-6 text-center min-h-[400px]">
           <AnimatePresence mode="wait">
             
-            {/* パターン1: ドラッグ中 */}
+            {/* ドラッグ中 */}
             {isDragActive && (
               <motion.div
                 key="drop"
@@ -90,7 +84,7 @@ export function CommandCenter() {
               </motion.div>
             )}
 
-            {/* パターン2: 変換中 */}
+            {/* 変換中 */}
             {!isDragActive && isConverting && (
               <motion.div
                 key="loading"
@@ -100,11 +94,11 @@ export function CommandCenter() {
                 className="flex flex-col items-center space-y-4"
               >
                 <Loader2 className="h-12 w-12 text-white animate-spin" />
-                <p className="text-neutral-400">Optimizing with Local AI...</p>
+                <p className="text-neutral-400">Optimizing...</p>
               </motion.div>
             )}
 
-            {/* パターン3: 結果表示 (成功！) */}
+            {/* 結果表示 */}
             {!isDragActive && !isConverting && result && (
               <motion.div
                 key="result"
@@ -128,8 +122,8 @@ export function CommandCenter() {
                   <Button 
                     className="flex-1 bg-white text-black hover:bg-neutral-200"
                     onClick={(e) => {
-                      e.stopPropagation(); // ドロップゾーン反応防止
-                      setResult(null); // リセット
+                      e.stopPropagation();
+                      setResult(null);
                     }}
                   >
                     Clear
@@ -141,14 +135,14 @@ export function CommandCenter() {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                      <Download className="mr-2 h-4 w-4" /> Download
+                      <Download className="mr-2 h-4 w-4" /> Save
                     </Button>
                   </a>
                 </div>
               </motion.div>
             )}
 
-            {/* パターン4: 通常状態 (初期画面) */}
+            {/* 通常状態 */}
             {!isDragActive && !isConverting && !result && (
               <motion.div
                 key="normal"
@@ -157,17 +151,28 @@ export function CommandCenter() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center space-y-8 w-full"
               >
-                <div className="relative h-20 w-20 flex items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-800 to-black border border-white/10 shadow-inner">
-                  <Sparkles className="h-10 w-10 text-white/80" />
+                {/* 👇 ここをクリック可能に変更しました！ */}
+                <div 
+                  onClick={open}
+                  className="relative h-24 w-24 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-800 to-black border border-white/10 shadow-inner cursor-pointer hover:border-white/30 transition-colors group/icon"
+                >
+                  <Sparkles className="h-8 w-8 text-white/80 mb-1 group-hover/icon:text-yellow-200 transition-colors" />
+                  <span className="text-[10px] text-neutral-400 font-medium">TAP HERE</span>
+                  <div className="absolute -inset-4 rounded-full bg-white/5 blur-xl opacity-50 pointer-events-none" />
                 </div>
 
                 <div className="space-y-2">
-                  <h2 className="text-4xl font-semibold tracking-tight text-white">{t('title')}</h2>
-                  <p className="text-neutral-400 text-lg">{t('subtitle')}</p>
+                  <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white px-4">
+                    {t('title')}
+                  </h2>
+                  <p className="text-neutral-400 text-sm sm:text-lg px-4">
+                    {t('subtitle')}
+                  </p>
                 </div>
 
-                <div className="relative w-full max-w-md group z-20">
-                  <div className="relative flex items-center bg-neutral-900/80 border border-white/10 rounded-full px-4 py-3 shadow-lg focus-within:ring-2 focus-within:ring-white/20">
+                {/* 検索バー */}
+                <div className="relative w-full max-w-md group z-20 px-4">
+                  <div className="relative flex items-center bg-neutral-900/80 border border-white/10 rounded-full px-4 py-3 shadow-lg transition-all focus-within:ring-2 focus-within:ring-white/20">
                     <Search className="h-5 w-5 text-neutral-500 mr-3" />
                     <input 
                       type="text"
@@ -178,12 +183,20 @@ export function CommandCenter() {
                       onKeyDown={(e) => e.stopPropagation()} 
                       onClick={(e) => e.stopPropagation()}
                     />
-                    <div className="flex items-center gap-2 text-xs text-neutral-600 border border-white/10 rounded px-2 py-1 bg-black/20">
+                    <div className="hidden sm:flex items-center gap-2 text-xs text-neutral-600 border border-white/10 rounded px-2 py-1 bg-black/20">
                       <Command className="h-3 w-3" />
                       <span>K</span>
                     </div>
                   </div>
                 </div>
+
+                {/* スマホ向けの明示的なボタン */}
+                <div className="sm:hidden w-full px-12">
+                   <Button onClick={open} variant="outline" className="w-full bg-white/5 border-white/10 text-white hover:bg-white/10 h-12">
+                     <ImagePlus className="mr-2 h-4 w-4" /> Select Image
+                   </Button>
+                </div>
+
                 <p className="text-xs text-neutral-500">Supported: JPG, PNG → WebP</p>
               </motion.div>
             )}
