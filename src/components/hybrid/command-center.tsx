@@ -3,52 +3,102 @@
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus } from "lucide-react"; // ImagePlusを追加
+import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, X, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDropzone } from "react-dropzone";
 import { convertToWebP, formatBytes } from "@/lib/converter";
 import { Button } from "@/components/ui/button";
+import JSZip from "jszip"; // 👈 ZIPライブラリ
+
+type ConversionResult = {
+  originalName: string;
+  newName: string;
+  blob: Blob;
+  url: string;
+  originalSize: number;
+  newSize: number;
+};
 
 export function CommandCenter() {
   const t = useTranslations("Hero");
   const [value, setValue] = useState("");
   const [isConverting, setIsConverting] = useState(false);
-  const [result, setResult] = useState<{ url: string; originalSize: number; newSize: number; name: string } | null>(null);
+  const [results, setResults] = useState<ConversionResult[]>([]); // 👈 配列に変更
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file!");
+    // 画像以外をフィルタリング
+    const imageFiles = acceptedFiles.filter(file => file.type.startsWith("image/"));
+    
+    if (imageFiles.length === 0) {
+      alert("Please select image files!");
       return;
     }
 
     setIsConverting(true);
-    setResult(null);
+    // 前の結果があればクリアして新しく始める（または追加する仕様もアリだが今回はリセット）
+    setResults([]);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const data = await convertToWebP(file);
-      setResult({
-        ...data,
-        name: file.name.replace(/\.[^/.]+$/, "") + ".webp"
+      // ⏳ 演出用の待ち時間
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 🔥 並列処理で一気に変換！
+      const conversionPromises = imageFiles.map(async (file) => {
+        const data = await convertToWebP(file);
+        return {
+          originalName: file.name,
+          newName: file.name.replace(/\.[^/.]+$/, "") + ".webp",
+          ...data
+        };
       });
+
+      const newResults = await Promise.all(conversionPromises);
+      setResults(newResults);
+
     } catch (error) {
       console.error(error);
-      alert("Conversion failed.");
+      alert("Some files failed to convert.");
     } finally {
       setIsConverting(false);
     }
   }, []);
 
-  // open関数を取り出す
+  // ZIPダウンロード機能
+  const downloadZip = useCallback(async () => {
+    if (results.length === 0) return;
+
+    const zip = new JSZip();
+    
+    // 画像をZIPに追加
+    results.forEach((res) => {
+      zip.file(res.newName, res.blob);
+    });
+
+    // ZIPを生成してダウンロード
+    const content = await zip.generateAsync({ type: "blob" });
+    const zipUrl = URL.createObjectURL(content);
+    
+    const link = document.createElement("a");
+    link.href = zipUrl;
+    link.download = "converted_images.zip";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [results]);
+
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
-    noClick: true, // 全体のクリックは無効化（検索窓のため）
+    noClick: true,
     noKeyboard: true,
-    accept: { 'image/*': [] }
+    accept: { 'image/*': [] },
+    multiple: true // 👈 複数選択を許可！
   });
+
+  // 合計削減サイズを計算
+  const totalSaved = results.reduce((acc, curr) => acc + (curr.originalSize - curr.newSize), 0);
+  const totalReductionPercent = results.length > 0 
+    ? Math.round((totalSaved / results.reduce((acc, curr) => acc + curr.originalSize, 0)) * 100)
+    : 0;
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4" {...getRootProps()}>
@@ -80,7 +130,7 @@ export function CommandCenter() {
                 <div className="p-6 rounded-full bg-blue-500/20 border border-blue-500/30 animate-pulse">
                   <UploadCloud className="h-16 w-16 text-blue-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-blue-100">Release to Convert</h3>
+                <h3 className="text-2xl font-bold text-blue-100">Drop files here</h3>
               </motion.div>
             )}
 
@@ -94,56 +144,71 @@ export function CommandCenter() {
                 className="flex flex-col items-center space-y-4"
               >
                 <Loader2 className="h-12 w-12 text-white animate-spin" />
-                <p className="text-neutral-400">Optimizing...</p>
+                <p className="text-neutral-400">Processing multiple files...</p>
               </motion.div>
             )}
 
-            {/* 結果表示 */}
-            {!isDragActive && !isConverting && result && (
+            {/* 結果表示 (リスト形式) */}
+            {!isDragActive && !isConverting && results.length > 0 && (
               <motion.div
                 key="result"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-6"
+                className="w-full max-w-lg flex flex-col gap-4"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="text-left">
-                    <p className="text-xs text-neutral-500 mb-1">Original</p>
-                    <p className="text-lg font-mono text-neutral-300">{formatBytes(result.originalSize)}</p>
-                  </div>
-                  <ArrowRight className="text-neutral-600" />
-                  <div className="text-right">
-                    <p className="text-xs text-green-400 mb-1">Optimized</p>
-                    <p className="text-2xl font-bold text-green-400">{formatBytes(result.newSize)}</p>
-                  </div>
+                <div className="flex items-center justify-between text-sm text-neutral-400 px-2">
+                  <span>{results.length} files converted</span>
+                  <span className="text-green-400 font-bold">Saved {formatBytes(totalSaved)} (-{totalReductionPercent}%)</span>
                 </div>
 
-                <div className="flex gap-3">
+                {/* スクロール可能なリストエリア */}
+                <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                  {results.map((res, index) => (
+                    <div key={index} className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 text-sm">
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="h-8 w-8 rounded bg-neutral-800 flex items-center justify-center shrink-0">
+                           <img src={res.url} className="h-full w-full object-cover rounded opacity-80" alt="" />
+                        </div>
+                        <div className="truncate text-neutral-300 max-w-[120px] sm:max-w-[200px]" title={res.originalName}>
+                          {res.originalName}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-neutral-500 line-through text-xs">{formatBytes(res.originalSize)}</span>
+                        <ArrowRight className="h-3 w-3 text-neutral-600" />
+                        <span className="text-green-400 font-mono">{formatBytes(res.newSize)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-3 mt-2">
                   <Button 
-                    className="flex-1 bg-white text-black hover:bg-neutral-200"
+                    variant="outline"
+                    className="flex-1 bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10 hover:text-white"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setResult(null);
+                      setResults([]);
                     }}
                   >
-                    Clear
+                    <Trash2 className="mr-2 h-4 w-4" /> Clear
                   </Button>
-                  <a 
-                    href={result.url} 
-                    download={result.name}
-                    className="flex-1"
-                    onClick={(e) => e.stopPropagation()}
+                  
+                  <Button 
+                    className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      downloadZip();
+                    }}
                   >
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                      <Download className="mr-2 h-4 w-4" /> Save
-                    </Button>
-                  </a>
+                    <FileArchive className="mr-2 h-4 w-4" /> Download ZIP
+                  </Button>
                 </div>
               </motion.div>
             )}
 
             {/* 通常状態 */}
-            {!isDragActive && !isConverting && !result && (
+            {!isDragActive && !isConverting && results.length === 0 && (
               <motion.div
                 key="normal"
                 initial={{ opacity: 0 }}
@@ -151,7 +216,6 @@ export function CommandCenter() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center space-y-8 w-full"
               >
-                {/* 👇 ここをクリック可能に変更しました！ */}
                 <div 
                   onClick={open}
                   className="relative h-24 w-24 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-800 to-black border border-white/10 shadow-inner cursor-pointer hover:border-white/30 transition-colors group/icon"
@@ -170,7 +234,6 @@ export function CommandCenter() {
                   </p>
                 </div>
 
-                {/* 検索バー */}
                 <div className="relative w-full max-w-md group z-20 px-4">
                   <div className="relative flex items-center bg-neutral-900/80 border border-white/10 rounded-full px-4 py-3 shadow-lg transition-all focus-within:ring-2 focus-within:ring-white/20">
                     <Search className="h-5 w-5 text-neutral-500 mr-3" />
@@ -190,14 +253,15 @@ export function CommandCenter() {
                   </div>
                 </div>
 
-                {/* スマホ向けの明示的なボタン */}
                 <div className="sm:hidden w-full px-12">
                    <Button onClick={open} variant="outline" className="w-full bg-white/5 border-white/10 text-white hover:bg-white/10 h-12">
-                     <ImagePlus className="mr-2 h-4 w-4" /> Select Image
+                     <ImagePlus className="mr-2 h-4 w-4" /> Select Images
                    </Button>
                 </div>
 
-                <p className="text-xs text-neutral-500">Supported: JPG, PNG → WebP</p>
+                <p className="text-xs text-neutral-500">
+                   Batch processing supported (JPG, PNG)
+                </p>
               </motion.div>
             )}
 
