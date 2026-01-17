@@ -3,12 +3,16 @@
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, X, Trash2 } from "lucide-react";
+import { Search, Sparkles, Command, UploadCloud, Download, ArrowRight, Loader2, ImagePlus, FileArchive, X, Trash2, FileText, Merge } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDropzone } from "react-dropzone";
 import { convertToWebP, formatBytes } from "@/lib/converter";
+import { mergePDFs } from "@/lib/pdf-utils"; // 👈 PDFエンジン追加
 import { Button } from "@/components/ui/button";
-import JSZip from "jszip"; // 👈 ZIPライブラリ
+import JSZip from "jszip";
+
+// 型定義
+type Mode = "image" | "pdf" | null;
 
 type ConversionResult = {
   originalName: string;
@@ -22,83 +26,96 @@ type ConversionResult = {
 export function CommandCenter() {
   const t = useTranslations("Hero");
   const [value, setValue] = useState("");
-  const [isConverting, setIsConverting] = useState(false);
-  const [results, setResults] = useState<ConversionResult[]>([]); // 👈 配列に変更
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [mode, setMode] = useState<Mode>(null);
+  
+  // 結果ステート
+  const [imageResults, setImageResults] = useState<ConversionResult[]>([]);
+  const [pdfResult, setPdfResult] = useState<{ url: string; count: number; filename: string } | null>(null);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    // 画像以外をフィルタリング
-    const imageFiles = acceptedFiles.filter(file => file.type.startsWith("image/"));
+    if (acceptedFiles.length === 0) return;
+
+    // 最初のファイルでモードを判定
+    const firstType = acceptedFiles[0].type;
+    const isPDF = firstType === "application/pdf";
     
-    if (imageFiles.length === 0) {
-      alert("Please select image files!");
+    // 混ぜるな危険（画像とPDFが混ざってたらエラー）
+    const isMixed = acceptedFiles.some(f => (isPDF ? f.type !== "application/pdf" : !f.type.startsWith("image/")));
+    
+    if (isMixed) {
+      alert("Please upload only Images OR only PDFs, not both.");
       return;
     }
 
-    setIsConverting(true);
-    // 前の結果があればクリアして新しく始める（または追加する仕様もアリだが今回はリセット）
-    setResults([]);
+    setMode(isPDF ? "pdf" : "image");
+    setIsProcessing(true);
+    
+    // リセット
+    setImageResults([]);
+    setPdfResult(null);
 
     try {
-      // ⏳ 演出用の待ち時間
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 600)); // 演出
 
-      // 🔥 並列処理で一気に変換！
-      const conversionPromises = imageFiles.map(async (file) => {
-        const data = await convertToWebP(file);
-        return {
-          originalName: file.name,
-          newName: file.name.replace(/\.[^/.]+$/, "") + ".webp",
-          ...data
-        };
-      });
-
-      const newResults = await Promise.all(conversionPromises);
-      setResults(newResults);
+      if (isPDF) {
+        // --- PDF処理 ---
+        const { blob, filename, count } = await mergePDFs(acceptedFiles);
+        const url = URL.createObjectURL(blob);
+        setPdfResult({ url, filename, count });
+      } else {
+        // --- 画像処理 ---
+        const conversionPromises = acceptedFiles.map(async (file) => {
+          const data = await convertToWebP(file);
+          return {
+            originalName: file.name,
+            newName: file.name.replace(/\.[^/.]+$/, "") + ".webp",
+            ...data
+          };
+        });
+        const results = await Promise.all(conversionPromises);
+        setImageResults(results);
+      }
 
     } catch (error) {
       console.error(error);
-      alert("Some files failed to convert.");
+      alert("Processing failed.");
+      setMode(null);
     } finally {
-      setIsConverting(false);
+      setIsProcessing(false);
     }
   }, []);
 
-  // ZIPダウンロード機能
+  // ZIPダウンロード
   const downloadZip = useCallback(async () => {
-    if (results.length === 0) return;
-
+    if (imageResults.length === 0) return;
     const zip = new JSZip();
-    
-    // 画像をZIPに追加
-    results.forEach((res) => {
-      zip.file(res.newName, res.blob);
-    });
-
-    // ZIPを生成してダウンロード
+    imageResults.forEach((res) => zip.file(res.newName, res.blob));
     const content = await zip.generateAsync({ type: "blob" });
-    const zipUrl = URL.createObjectURL(content);
-    
     const link = document.createElement("a");
-    link.href = zipUrl;
+    link.href = URL.createObjectURL(content);
     link.download = "converted_images.zip";
-    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
-  }, [results]);
+  }, [imageResults]);
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     noClick: true,
     noKeyboard: true,
-    accept: { 'image/*': [] },
-    multiple: true // 👈 複数選択を許可！
+    accept: { 
+      'image/*': [], 
+      'application/pdf': [] // PDFも許可！
+    },
+    multiple: true
   });
 
-  // 合計削減サイズを計算
-  const totalSaved = results.reduce((acc, curr) => acc + (curr.originalSize - curr.newSize), 0);
-  const totalReductionPercent = results.length > 0 
-    ? Math.round((totalSaved / results.reduce((acc, curr) => acc + curr.originalSize, 0)) * 100)
-    : 0;
+  // リセット処理
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMode(null);
+    setImageResults([]);
+    setPdfResult(null);
+  };
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4" {...getRootProps()}>
@@ -127,15 +144,16 @@ export function CommandCenter() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="flex flex-col items-center space-y-4"
               >
-                <div className="p-6 rounded-full bg-blue-500/20 border border-blue-500/30 animate-pulse">
-                  <UploadCloud className="h-16 w-16 text-blue-400" />
+                <div className="p-6 rounded-full bg-indigo-500/20 border border-indigo-500/30 animate-pulse">
+                  <Merge className="h-16 w-16 text-indigo-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-blue-100">Drop files here</h3>
+                <h3 className="text-2xl font-bold text-indigo-100">Drop to Process</h3>
+                <p className="text-indigo-300">Images → WebP | PDFs → Merge</p>
               </motion.div>
             )}
 
-            {/* 変換中 */}
-            {!isDragActive && isConverting && (
+            {/* 処理中 */}
+            {!isDragActive && isProcessing && (
               <motion.div
                 key="loading"
                 initial={{ opacity: 0 }}
@@ -144,71 +162,79 @@ export function CommandCenter() {
                 className="flex flex-col items-center space-y-4"
               >
                 <Loader2 className="h-12 w-12 text-white animate-spin" />
-                <p className="text-neutral-400">Processing multiple files...</p>
+                <p className="text-neutral-400">
+                  {mode === "pdf" ? "Merging PDFs..." : "Optimizing Images..."}
+                </p>
               </motion.div>
             )}
 
-            {/* 結果表示 (リスト形式) */}
-            {!isDragActive && !isConverting && results.length > 0 && (
+            {/* 結果表示：PDFモード */}
+            {!isDragActive && !isProcessing && mode === "pdf" && pdfResult && (
               <motion.div
-                key="result"
+                key="pdf-result"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center space-y-6 w-full max-w-md"
+              >
+                <div className="p-6 rounded-2xl bg-red-500/10 border border-red-500/20">
+                  <FileText className="h-12 w-12 text-red-400 mb-2 mx-auto" />
+                  <h3 className="text-xl font-bold text-white">{pdfResult.count} PDFs Merged!</h3>
+                </div>
+                
+                <div className="flex gap-3 w-full">
+                  <Button variant="outline" className="flex-1 bg-white/5 border-white/10" onClick={handleClear}>
+                    Clear
+                  </Button>
+                  <a href={pdfResult.url} download={pdfResult.filename} className="flex-[2]" onClick={(e) => e.stopPropagation()}>
+                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                      <Download className="mr-2 h-4 w-4" /> Download PDF
+                    </Button>
+                  </a>
+                </div>
+              </motion.div>
+            )}
+
+            {/* 結果表示：画像モード */}
+            {!isDragActive && !isProcessing && mode === "image" && imageResults.length > 0 && (
+              <motion.div
+                key="image-result"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full max-w-lg flex flex-col gap-4"
               >
                 <div className="flex items-center justify-between text-sm text-neutral-400 px-2">
-                  <span>{results.length} files converted</span>
-                  <span className="text-green-400 font-bold">Saved {formatBytes(totalSaved)} (-{totalReductionPercent}%)</span>
+                  <span>{imageResults.length} images converted</span>
                 </div>
 
-                {/* スクロール可能なリストエリア */}
                 <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                  {results.map((res, index) => (
+                  {imageResults.map((res, index) => (
                     <div key={index} className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 text-sm">
                       <div className="flex items-center gap-3 overflow-hidden">
                         <div className="h-8 w-8 rounded bg-neutral-800 flex items-center justify-center shrink-0">
                            <img src={res.url} className="h-full w-full object-cover rounded opacity-80" alt="" />
                         </div>
-                        <div className="truncate text-neutral-300 max-w-[120px] sm:max-w-[200px]" title={res.originalName}>
-                          {res.originalName}
-                        </div>
+                        <span className="truncate text-neutral-300 max-w-[150px]">{res.originalName}</span>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-neutral-500 line-through text-xs">{formatBytes(res.originalSize)}</span>
-                        <ArrowRight className="h-3 w-3 text-neutral-600" />
-                        <span className="text-green-400 font-mono">{formatBytes(res.newSize)}</span>
+                      <div className="flex items-center gap-2 text-green-400 font-mono">
+                         {formatBytes(res.newSize)}
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="flex gap-3 mt-2">
-                  <Button 
-                    variant="outline"
-                    className="flex-1 bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10 hover:text-white"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setResults([]);
-                    }}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" /> Clear
+                  <Button variant="outline" className="flex-1 bg-white/5 border-white/10" onClick={handleClear}>
+                    Clear
                   </Button>
-                  
-                  <Button 
-                    className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      downloadZip();
-                    }}
-                  >
+                  <Button className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white" onClick={(e) => { e.stopPropagation(); downloadZip(); }}>
                     <FileArchive className="mr-2 h-4 w-4" /> Download ZIP
                   </Button>
                 </div>
               </motion.div>
             )}
 
-            {/* 通常状態 */}
-            {!isDragActive && !isConverting && results.length === 0 && (
+            {/* 通常モード */}
+            {!isDragActive && !isProcessing && !mode && (
               <motion.div
                 key="normal"
                 initial={{ opacity: 0 }}
@@ -216,22 +242,15 @@ export function CommandCenter() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center space-y-8 w-full"
               >
-                <div 
-                  onClick={open}
-                  className="relative h-24 w-24 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-800 to-black border border-white/10 shadow-inner cursor-pointer hover:border-white/30 transition-colors group/icon"
-                >
+                <div onClick={open} className="relative h-24 w-24 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-800 to-black border border-white/10 shadow-inner cursor-pointer hover:border-white/30 transition-colors group/icon">
                   <Sparkles className="h-8 w-8 text-white/80 mb-1 group-hover/icon:text-yellow-200 transition-colors" />
                   <span className="text-[10px] text-neutral-400 font-medium">TAP HERE</span>
                   <div className="absolute -inset-4 rounded-full bg-white/5 blur-xl opacity-50 pointer-events-none" />
                 </div>
 
                 <div className="space-y-2">
-                  <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white px-4">
-                    {t('title')}
-                  </h2>
-                  <p className="text-neutral-400 text-sm sm:text-lg px-4">
-                    {t('subtitle')}
-                  </p>
+                  <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white px-4">{t('title')}</h2>
+                  <p className="text-neutral-400 text-sm sm:text-lg px-4">{t('subtitle')}</p>
                 </div>
 
                 <div className="relative w-full max-w-md group z-20 px-4">
@@ -255,13 +274,11 @@ export function CommandCenter() {
 
                 <div className="sm:hidden w-full px-12">
                    <Button onClick={open} variant="outline" className="w-full bg-white/5 border-white/10 text-white hover:bg-white/10 h-12">
-                     <ImagePlus className="mr-2 h-4 w-4" /> Select Images
+                     <ImagePlus className="mr-2 h-4 w-4" /> Select Files
                    </Button>
                 </div>
 
-                <p className="text-xs text-neutral-500">
-                   Batch processing supported (JPG, PNG)
-                </p>
+                <p className="text-xs text-neutral-500">Supports: JPG, PNG → WebP / PDF → Merge</p>
               </motion.div>
             )}
 

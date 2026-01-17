@@ -54,7 +54,7 @@ export function BentoGrid() {
         </div>
       </motion.div>
 
-      {/* Card 3: Proプランへの導線 (収益化の種) */}
+      {/* Card 3: PDF Tools (Coming Soon を Ready に変更！) */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -62,16 +62,25 @@ export function BentoGrid() {
         className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10"
       >
         <div className="flex items-center justify-between mb-4">
-          <div className="p-3 rounded-full bg-yellow-500/10 border border-yellow-500/20">
-            <Crown className="h-6 w-6 text-yellow-500" />
+          <div className="p-3 rounded-full bg-red-500/10 border border-red-500/20">
+            {/* CrownアイコンをMergeアイコンなどに変更 */}
+            <div className="h-6 w-6 text-red-500 flex items-center justify-center font-bold text-xs border border-red-500 rounded">PDF</div>
           </div>
-          <span className="px-2 py-1 rounded text-[10px] font-bold bg-white text-black uppercase">Coming Soon</span>
+          {/* Badgeを緑に変更 */}
+          <span className="px-2 py-1 rounded text-[10px] font-bold bg-green-500 text-black uppercase animate-pulse">
+            Active Now
+          </span>
         </div>
-        <h3 className="text-lg font-semibold text-white mb-1">Unlock PDF Tools</h3>
-        <p className="text-sm text-neutral-400 mb-4">PDFの結合、圧縮、変換機能。</p>
-        <button className="w-full py-2 rounded-lg border border-white/10 bg-white/5 text-sm text-white hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
-          Join Waitlist <ArrowUpRight className="h-3 w-3" />
-        </button>
+        
+        <h3 className="text-lg font-semibold text-white mb-1">PDF Merge Ready</h3>
+        <p className="text-sm text-neutral-400 mb-4">
+          PDFファイルを複数ドラッグするだけで、瞬時に1つのファイルに結合します。
+        </p>
+        
+        {/* ボタンも変更 */}
+        <div className="w-full py-2 rounded-lg border border-white/10 bg-white/5 text-sm text-neutral-300 flex items-center justify-center gap-2 cursor-default">
+           Try dragging PDFs above ⬆
+        </div>
       </motion.div>
 
       {/* Card 4: 技術スタック (装飾) */}
