@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
-import withPWAInit from "@ducanh2912/next-pwa"; // 👈 ここを require から import に変更
+import withPWAInit from "@ducanh2912/next-pwa";
 
 // 1. PWAの設定
 const withPWA = withPWAInit({
@@ -18,10 +18,28 @@ const withPWA = withPWAInit({
 // 2. 多言語化の設定
 const withNextIntl = createNextIntlPlugin();
 
-// 3. 基本設定 ＆ バージョン情報の埋め込み
+// 3. 基本設定 ＆ ヘッダー設定（FFmpeg用）
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version || "1.0.0",
+  },
+  // 👇 ここが重要！動画編集AIをブラウザで動かすためのセキュリティ解除設定
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+          {
+            key: "Cross-Origin-Embedder-Policy",
+            value: "require-corp",
+          },
+        ],
+      },
+    ];
   },
 };
 
