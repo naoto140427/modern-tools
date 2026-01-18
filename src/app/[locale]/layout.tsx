@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "../globals.css"; // 👈 修正: 1つ上でOKでした
+import "../globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 
@@ -16,10 +16,11 @@ export default async function RootLayout({
   params
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  // 👇 ここを修正: Promise<{ locale: string }> に変更
+  params: Promise<{ locale: string }>;
 }) {
-  // paramsを非同期で解決
-  const { locale } = await Promise.resolve(params);
+  // paramsをawaitして中身を取り出す
+  const { locale } = await params;
   const messages = await getMessages();
 
   return (

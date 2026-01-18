@@ -14,8 +14,8 @@ export async function mergePDFs(files: File[]): Promise<{ blob: Blob; filename: 
 
   const pdfBytes = await mergedPdf.save();
   
-  // 👇 ここを修正しました（[pdfBytes] → [pdfBytes as any]）
-  // TypeScriptに「型チェックをスキップして」と伝えます
+  // 👇 ESLintを黙らせる
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
 
   return {

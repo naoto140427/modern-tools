@@ -18,10 +18,8 @@ import QRCode from "qrcode";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Mode, ConversionResult } from "@/lib/types";
-// 👇 定数をインポート（これが重要！）
 import { APP_MODES, OUTPUT_FORMATS, OutputFormat } from "@/lib/constants";
 
-// Feature Components
 import { ImageMode } from "@/components/features/ImageMode";
 import { OcrMode } from "@/components/features/OcrMode";
 import { PdfMode, QrMode, YoutubeMode } from "@/components/features/MiscModes";
@@ -29,7 +27,7 @@ import { DevMode } from "@/components/features/DevMode";
 import { PrivacyMode } from "@/components/features/PrivacyMode";
 import { VideoMode } from "@/components/features/VideoMode";
 
-// コマンド定義でも定数を使う（ID部分は文字列のままでもOKだが、ロジック内での比較には定数を使う）
+// コマンド定義
 const COMMANDS = [
   { id: "video_mode", label: "Video Compressor (Beta)", icon: FileVideo, shortcut: "V", mode: APP_MODES.VIDEO },
   { id: "ocr_mode", label: "Switch to OCR Mode", icon: ScanText, shortcut: "O", mode: APP_MODES.OCR },
@@ -43,7 +41,6 @@ const COMMANDS = [
   { id: "format_png", label: "Set Output to PNG", icon: FileType, shortcut: "", format: OUTPUT_FORMATS.PNG },
 ];
 
-// Result Types
 interface PrivacyResult {
   originalName: string;
   blob: Blob;
@@ -63,11 +60,10 @@ export function CommandCenter() {
   const t = useTranslations("Hero");
   const router = useRouter();
   
-  // --- Global State ---
   const [inputValue, setInputValue] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
-  const [mode, setMode] = useState<Mode>(APP_MODES.HOME); // 初期値は定数でnull
+  const [mode, setMode] = useState<Mode>(APP_MODES.HOME);
   const [progress, setProgress] = useState(0); 
   const [quality, setQuality] = useState(0.8);
   const [targetFormat, setTargetFormat] = useState<OutputFormat>(OUTPUT_FORMATS.WEBP);
@@ -75,7 +71,6 @@ export function CommandCenter() {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   
-  // --- Results State ---
   const [imageResults, setImageResults] = useState<ConversionResult[]>([]);
   const [pdfResult, setPdfResult] = useState<{ url: string; count: number; filename: string } | null>(null);
   const [ocrResult, setOcrResult] = useState<string | null>(null);
@@ -86,7 +81,35 @@ export function CommandCenter() {
   const [privacyResults, setPrivacyResults] = useState<PrivacyResult[]>([]);
   const [videoResult, setVideoResult] = useState<VideoResult | null>(null);
 
-  // --- Keyboard Shortcuts ---
+  const handleClear = useCallback((e?: React.SyntheticEvent) => {
+    if (e) e.stopPropagation();
+    setMode(APP_MODES.HOME); setInputValue(""); setImageResults([]); setPdfResult(null); setQrCodeUrl(null); setYoutubeThumb(null); setOcrResult(null); setPrivacyResults([]); setVideoResult(null);
+    setShowCommandPalette(false);
+  }, []);
+
+  // executeCommandをuseCallbackで包んで依存配列警告を解消
+  const executeCommand = useCallback((cmd: typeof COMMANDS[0]) => {
+    setShowCommandPalette(false);
+    setTimeout(() => {
+      if (cmd.mode) {
+        setMode(cmd.mode);
+        const label = cmd.label.split(" (")[0];
+        toast(`Switched to ${label}`, { icon: <cmd.icon className="w-4 h-4" /> });
+        return;
+      }
+      if (cmd.format) {
+        setTargetFormat(cmd.format);
+        toast.success(`Output set to ${cmd.format.split("/")[1].toUpperCase()}`);
+        return;
+      }
+      switch (cmd.id) {
+        case "docs": router.push("/docs"); break;
+        case "clear": handleClear(); toast("Reset complete", { icon: <RefreshCw className="w-4 h-4" /> }); break;
+        case "settings": setShowSettings((prev) => !prev); break;
+      }
+    }, 100);
+  }, [router, handleClear]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -112,35 +135,7 @@ export function CommandCenter() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showCommandPalette, selectedIndex]);
-
-  // コマンド実行関数を改修（IDではなくオブジェクトを受け取る）
-  const executeCommand = (cmd: typeof COMMANDS[0]) => {
-    setShowCommandPalette(false);
-    setTimeout(() => {
-      // モード切替系のコマンド
-      if (cmd.mode) {
-        setMode(cmd.mode);
-        const label = cmd.label.split(" (")[0]; // "Video Compressor"などを抽出
-        toast(`Switched to ${label}`, { icon: <cmd.icon className="w-4 h-4" /> });
-        return;
-      }
-      
-      // フォーマット変更系のコマンド
-      if (cmd.format) {
-        setTargetFormat(cmd.format);
-        toast.success(`Output set to ${cmd.format.split("/")[1].toUpperCase()}`);
-        return;
-      }
-
-      // その他のコマンド
-      switch (cmd.id) {
-        case "docs": router.push("/docs"); break;
-        case "clear": handleClear(); toast("Reset complete", { icon: <RefreshCw className="w-4 h-4" /> }); break;
-        case "settings": setShowSettings((prev) => !prev); break;
-      }
-    }, 100);
-  };
+  }, [showCommandPalette, selectedIndex, executeCommand]);
 
   const getYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -148,9 +143,7 @@ export function CommandCenter() {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  // --- Input Watcher ---
   useEffect(() => {
-    // 処理系のモード中は入力を監視しない
     const processingModes: Mode[] = [APP_MODES.IMAGE, APP_MODES.PDF, APP_MODES.OCR, APP_MODES.DEV, APP_MODES.PRIVACY, APP_MODES.VIDEO];
     if (processingModes.includes(mode)) return;
 
@@ -174,7 +167,6 @@ export function CommandCenter() {
     return () => clearTimeout(timer);
   }, [inputValue, qrColor, qrBgColor, mode]);
 
-  // --- Drop Logic ---
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
 
@@ -185,7 +177,6 @@ export function CommandCenter() {
 
     if (!isPDF && !isImage && !isVideo) return;
 
-    // 1. Video Processing
     if (mode === APP_MODES.VIDEO) {
       if (!isVideo) { toast.error("Supports video files only."); return; }
       setInputValue("");
@@ -194,7 +185,7 @@ export function CommandCenter() {
       setVideoResult(null);
       setStatusMessage("Loading Engine...");
       try {
-        await videoProcessor.load((p) => {}); 
+        await videoProcessor.load(() => {}); 
         setStatusMessage("Compressing...");
         const compressedBlob = await videoProcessor.compress(file, (p) => setProgress(p));
         setVideoResult({
@@ -210,7 +201,6 @@ export function CommandCenter() {
       return;
     }
 
-    // 2. OCR Processing
     if (mode === APP_MODES.OCR) {
       if (!isImage) { toast.error("OCR supports images only."); return; }
       setInputValue("");
@@ -226,7 +216,6 @@ export function CommandCenter() {
       return;
     }
 
-    // 3. Privacy Processing
     if (mode === APP_MODES.PRIVACY) {
       if (!isImage) { toast.error("Supports images only."); return; }
       setIsProcessing(true);
@@ -244,13 +233,12 @@ export function CommandCenter() {
       return;
     }
 
-    // 4. Auto-Switch to Video Mode
-    if (isVideo && mode !== APP_MODES.VIDEO) {
+    // ここが型エラーの原因だったので、as string で強制的に型を合わせる（安全）
+    if (isVideo && (mode as string) !== APP_MODES.VIDEO) {
       toast("Please switch to Video Mode (Cmd+K -> Video) for compression.");
       return;
     }
 
-    // 5. Default: Image/PDF Conversion
     if (mode === APP_MODES.DEV) {
        setMode(isPDF ? APP_MODES.PDF : APP_MODES.IMAGE);
     } else {
@@ -290,12 +278,6 @@ export function CommandCenter() {
     const link = document.createElement("a"); link.href = URL.createObjectURL(content); link.download = "converted_images.zip"; link.click();
     toast.success("ZIP Downloaded!");
   }, [imageResults]);
-
-  const handleClear = (e?: React.SyntheticEvent) => {
-    if (e) e.stopPropagation();
-    setMode(APP_MODES.HOME); setInputValue(""); setImageResults([]); setPdfResult(null); setQrCodeUrl(null); setYoutubeThumb(null); setOcrResult(null); setPrivacyResults([]); setVideoResult(null);
-    setShowCommandPalette(false);
-  };
   
   const downloadImage = (url: string, name: string) => {
      const link = document.createElement("a"); link.href = url; link.download = name; link.click();
@@ -307,8 +289,6 @@ export function CommandCenter() {
     multiple: true
   });
 
-  // --- Rendering Helpers ---
-  // UIを表示するかどうかのフラグを一元管理
   const showDefaultUI = !isDragActive && !isProcessing && !videoResult && !imageResults.length && !pdfResult && !ocrResult && !privacyResults.length && !qrCodeUrl && !youtubeThumb;
 
   return (
@@ -316,7 +296,6 @@ export function CommandCenter() {
       <Toaster position="bottom-center" theme="dark" />
       <input {...getInputProps()} />
 
-      {/* Cmd+K Palette */}
       <AnimatePresence>
         {showCommandPalette && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowCommandPalette(false)}>
@@ -338,7 +317,6 @@ export function CommandCenter() {
       <motion.div layout className={cn("relative overflow-hidden rounded-3xl border transition-all duration-500", isDragActive ? "bg-blue-500/10 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.3)] scale-105" : "bg-black/40 border-white/10 backdrop-blur-xl shadow-2xl")}>
         <div className="absolute inset-0 bg-gradient-to-tr from-white/5 via-transparent to-transparent pointer-events-none" />
 
-        {/* Settings Button */}
         {showDefaultUI && (mode === APP_MODES.IMAGE || mode === APP_MODES.HOME) && (
           <div className="absolute top-4 right-4 z-30">
             <Button size="icon" variant="ghost" className="rounded-full bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10" onClick={(e) => { e.stopPropagation(); setShowSettings(!showSettings); }}>
@@ -347,7 +325,6 @@ export function CommandCenter() {
           </div>
         )}
 
-        {/* Settings Panel */}
         <AnimatePresence>
           {showSettings && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="absolute top-16 right-4 left-4 sm:left-auto sm:w-64 bg-[#111] border border-white/10 rounded-2xl p-4 z-40 shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
@@ -371,7 +348,6 @@ export function CommandCenter() {
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center min-h-[400px]">
           <AnimatePresence mode="wait">
             
-            {/* 1. Drag Active UI */}
             {isDragActive && (
               <motion.div key="drop" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="flex flex-col items-center space-y-4">
                 <div className="p-6 rounded-full bg-indigo-500/20 border border-indigo-500/30 animate-pulse"><FileType className="h-16 w-16 text-indigo-400" /></div>
@@ -383,7 +359,6 @@ export function CommandCenter() {
               </motion.div>
             )}
 
-            {/* 2. Loading UI */}
             {!isDragActive && isProcessing && (
               <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center space-y-4">
                 <Loader2 className="h-12 w-12 text-white animate-spin" />
@@ -395,7 +370,6 @@ export function CommandCenter() {
               </motion.div>
             )}
 
-            {/* 3. Result Screens */}
             {!isDragActive && !isProcessing && mode === APP_MODES.OCR && ocrResult && <OcrMode text={ocrResult} onClear={handleClear} />}
             {!isDragActive && !isProcessing && mode === APP_MODES.IMAGE && imageResults.length > 0 && <ImageMode results={imageResults} targetFormat={targetFormat} onClear={handleClear} onDownloadZip={downloadZip} />}
             {!isDragActive && !isProcessing && mode === APP_MODES.PDF && pdfResult && <PdfMode result={pdfResult} onClear={handleClear} />}
@@ -408,7 +382,6 @@ export function CommandCenter() {
               <VideoMode isProcessing={isProcessing} progress={progress} statusMessage={statusMessage} result={videoResult} onClear={handleClear} />
             )}
 
-            {/* 4. Default UI (Home) */}
             {showDefaultUI && (
               <motion.div key="normal" layout className={cn("flex flex-col items-center space-y-8 w-full", (mode === APP_MODES.QR || mode === APP_MODES.YOUTUBE) ? "mt-8" : "")}>
                 {(mode !== APP_MODES.QR && mode !== APP_MODES.YOUTUBE) && (
