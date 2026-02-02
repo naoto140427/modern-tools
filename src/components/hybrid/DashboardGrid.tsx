@@ -8,65 +8,101 @@ import { Image as ImageIcon, Film, ArrowRight } from "lucide-react";
 export function DashboardGrid() {
   const t = useTranslations("Dashboard");
 
+  const cardVariants = {
+    hover: {
+      scale: 1.02,
+      transition: { duration: 0.3, ease: [0.32, 0.72, 0, 1] as const }
+    },
+    tap: {
+      scale: 0.98
+    }
+  };
+
+  const glowVariants = {
+    hover: {
+      opacity: 1,
+      transition: { duration: 0.5 }
+    },
+    initial: {
+      opacity: 0
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto p-4">
       {/* Lumina Image Lab Card */}
-      <Link href="/tools/image" className="block group">
+      <Link href="/tools/image" className="block group relative">
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-blue-900/20 to-white/5 p-8 backdrop-blur-md transition-all duration-300 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] h-full"
+          variants={cardVariants}
+          whileHover="hover"
+          whileTap="tap"
+          initial="initial"
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-8 backdrop-blur-xl h-64 md:h-80 flex flex-col justify-between shadow-2xl ring-1 ring-white/5"
         >
-          {/* Background Gradient Accent */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-all duration-500" />
+           {/* Dynamic Glow Border Effect */}
+           <motion.div
+             variants={glowVariants}
+             className="absolute inset-0 rounded-3xl ring-1 ring-blue-500/50 z-20 pointer-events-none"
+           />
 
-          <div className="relative z-10 flex flex-col h-full justify-between space-y-8">
-            <div className="p-4 w-fit rounded-2xl bg-blue-500/20 border border-blue-500/30 text-blue-400 group-hover:scale-110 transition-transform duration-300">
-              <ImageIcon className="w-8 h-8" />
-            </div>
+           {/* Ambient Light */}
+           <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-white group-hover:text-blue-200 transition-colors">
-                  {t('ImageLab.title')}
-                </h3>
-                <ArrowRight className="w-5 h-5 text-white/30 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+           <div className="relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-6 group-hover:shadow-blue-500/40 transition-shadow duration-300">
+                <ImageIcon className="w-7 h-7 text-white" />
               </div>
-              <p className="text-muted-foreground group-hover:text-white/70 transition-colors">
+              <h3 className="text-2xl font-semibold text-white tracking-tight mb-1">
+                {t('ImageLab.title')}
+              </h3>
+              <p className="text-sm text-neutral-400 font-medium">
                 {t('ImageLab.description')}
               </p>
-            </div>
-          </div>
+           </div>
+
+           <div className="relative z-10 flex justify-end">
+              <div className="w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center group-hover:bg-blue-500 group-hover:border-blue-500 transition-all duration-300">
+                 <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              </div>
+           </div>
         </motion.div>
       </Link>
 
       {/* Lumina Video Lab Card */}
-      <Link href="/tools/video" className="block group">
+      <Link href="/tools/video" className="block group relative">
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-orange-900/20 to-white/5 p-8 backdrop-blur-md transition-all duration-300 hover:border-orange-500/50 hover:shadow-[0_0_30px_rgba(249,115,22,0.2)] h-full"
+          variants={cardVariants}
+          whileHover="hover"
+          whileTap="tap"
+          initial="initial"
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-8 backdrop-blur-xl h-64 md:h-80 flex flex-col justify-between shadow-2xl ring-1 ring-white/5"
         >
-          {/* Background Gradient Accent */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange-500/20 rounded-full blur-3xl group-hover:bg-orange-500/30 transition-all duration-500" />
+           {/* Dynamic Glow Border Effect */}
+           <motion.div
+             variants={glowVariants}
+             className="absolute inset-0 rounded-3xl ring-1 ring-orange-500/50 z-20 pointer-events-none"
+           />
 
-          <div className="relative z-10 flex flex-col h-full justify-between space-y-8">
-            <div className="p-4 w-fit rounded-2xl bg-orange-500/20 border border-orange-500/30 text-orange-400 group-hover:scale-110 transition-transform duration-300">
-              <Film className="w-8 h-8" />
-            </div>
+           {/* Ambient Light */}
+           <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-orange-500/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-white group-hover:text-orange-200 transition-colors">
-                  {t('VideoLab.title')}
-                </h3>
-                <ArrowRight className="w-5 h-5 text-white/30 group-hover:text-orange-400 group-hover:translate-x-1 transition-all" />
+           <div className="relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-6 group-hover:shadow-orange-500/40 transition-shadow duration-300">
+                <Film className="w-7 h-7 text-white" />
               </div>
-              <p className="text-muted-foreground group-hover:text-white/70 transition-colors">
+              <h3 className="text-2xl font-semibold text-white tracking-tight mb-1">
+                {t('VideoLab.title')}
+              </h3>
+              <p className="text-sm text-neutral-400 font-medium">
                 {t('VideoLab.description')}
               </p>
-            </div>
-          </div>
+           </div>
+
+           <div className="relative z-10 flex justify-end">
+              <div className="w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center group-hover:bg-orange-500 group-hover:border-orange-500 transition-all duration-300">
+                 <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              </div>
+           </div>
         </motion.div>
       </Link>
     </div>

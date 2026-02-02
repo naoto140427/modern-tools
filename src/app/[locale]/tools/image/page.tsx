@@ -9,8 +9,10 @@ import {
   RefreshCw,
   X,
   Settings2,
-  Check
+  Check,
+  ChevronLeft
 } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -40,10 +42,6 @@ const ProcessingOptionsSchema = z.object({
 type ImageDimensions = z.infer<typeof ImageDimensionsSchema>;
 type ProcessingOptions = z.infer<typeof ProcessingOptionsSchema>;
 
-/**
- * 画像処理ラボのメインページコンポーネント
- * Apple Human Interface Guidelinesに基づいたGlassmorphismデザインを採用
- */
 export default function ImageLabPage() {
   const t = useTranslations("ImageLab");
 
@@ -76,7 +74,7 @@ export default function ImageLabPage() {
       sourceImage.onload = () => {
         const dims = { width: sourceImage.width, height: sourceImage.height };
 
-        // Zodで検証（ランタイムチェック）
+        // Zodで検証
         const result = ImageDimensionsSchema.safeParse(dims);
         if (result.success) {
           setOriginalDimensions(result.data);
@@ -87,7 +85,6 @@ export default function ImageLabPage() {
     }
   }, []);
 
-  // リセット処理
   const handleResetAction = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     if (processedImageUrl) URL.revokeObjectURL(processedImageUrl);
@@ -97,12 +94,9 @@ export default function ImageLabPage() {
     setOriginalDimensions(null);
   };
 
-  // 画像変換処理
   const performImageConversion = async () => {
-    // 実行時バリデーション
     const validationResult = ProcessingOptionsSchema.safeParse(options);
     if (!validationResult.success || !selectedFile || !previewUrl || !options.dimensions) {
-      console.error("Validation failed", validationResult.error);
       return;
     }
 
@@ -144,7 +138,6 @@ export default function ImageLabPage() {
     }, 500);
   };
 
-  // サイズ変更ハンドラー
   const handleDimensionChange = (key: keyof ImageDimensions, value: string) => {
     const numValue = parseInt(value, 10);
     if (isNaN(numValue)) return;
@@ -163,8 +156,6 @@ export default function ImageLabPage() {
         }
       }
 
-      // 入力中の値が一時的に不正（負など）になってもUI入力は許容したいが、
-      // ここではZodでの検証を通ったものだけをセットする
       const dimensionResult = ImageDimensionsSchema.safeParse(newDimensions);
       if (dimensionResult.success) {
          return { ...prev, dimensions: dimensionResult.data };
@@ -173,43 +164,57 @@ export default function ImageLabPage() {
     });
   };
 
-  // アニメーション設定 (Spring Physics)
   const springTransition = { type: "spring" as const, stiffness: 300, damping: 30 };
 
   return (
-    <div className="min-h-screen w-full p-4 md:p-8 flex flex-col items-center justify-center bg-transparent">
+    <div className="min-h-screen w-full flex flex-col pt-24 pb-12 px-4 sm:px-8">
+      {/* ナビゲーションバック */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="w-full max-w-6xl mx-auto mb-8"
+      >
+         <Link href="/" className="inline-flex items-center text-sm text-neutral-400 hover:text-white transition-colors">
+            <ChevronLeft className="w-4 h-4 mr-1" />
+            Dashboard
+         </Link>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={springTransition}
-        className="w-full max-w-5xl space-y-8"
+        className="w-full max-w-6xl mx-auto space-y-8"
       >
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-semibold tracking-tight text-foreground/90">
+        <div className="text-center space-y-2 mb-12">
+          <h1 className="text-4xl font-semibold tracking-tight text-white">
             {t('title')}
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-neutral-400 font-light">
             {t('description')}
           </p>
         </div>
 
         <AnimatePresence mode="wait">
           {!selectedFile ? (
-            <FileDropzone
-              key="dropzone"
-              onDrop={handleDrop}
-              accept={{
-                'image/jpeg': [],
-                'image/png': [],
-                'image/webp': [],
-                'image/heic': []
-              }}
-              text={{
-                idle: t('dropzone.idle'),
-                active: t('dropzone.active'),
-                subtext: t('dropzone.subtext')
-              }}
-            />
+            <div className="max-w-3xl mx-auto">
+               <FileDropzone
+                 key="dropzone"
+                 onDrop={handleDrop}
+                 accept={{
+                   'image/jpeg': [],
+                   'image/png': [],
+                   'image/webp': [],
+                   'image/heic': []
+                 }}
+                 text={{
+                   idle: t('dropzone.idle'),
+                   active: t('dropzone.active'),
+                   subtext: t('dropzone.subtext')
+                 }}
+                 className="h-80 bg-black/40 border-white/10 backdrop-blur-xl rounded-3xl"
+               />
+            </div>
           ) : (
             <motion.div
               key="editor"
@@ -217,24 +222,24 @@ export default function ImageLabPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={springTransition}
-              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
             >
-              <div className="lg:col-span-2 space-y-4">
-                <Card className="relative overflow-hidden aspect-video flex items-center justify-center bg-black/20 backdrop-blur-xl border-white/10">
+              <div className="lg:col-span-2 space-y-6">
+                <Card className="relative overflow-hidden aspect-[4/3] flex items-center justify-center bg-black/40 backdrop-blur-xl border-white/10 rounded-3xl shadow-2xl">
                   {previewUrl && (
                     <motion.img
                       src={previewUrl}
                       alt="Preview"
-                      className="max-w-full max-h-full object-contain shadow-2xl"
+                      className="max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg"
                       layoutId="imagePreview"
                     />
                   )}
-                  <div className="absolute top-4 right-4">
+                  <div className="absolute top-6 right-6">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={handleResetAction}
-                      className="rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md"
+                      className="rounded-full bg-black/60 hover:bg-white/20 text-white backdrop-blur-md border border-white/10"
                     >
                       <X className="w-5 h-5" />
                     </Button>
@@ -248,19 +253,19 @@ export default function ImageLabPage() {
                       animate={{ opacity: 1, height: 'auto' }}
                       transition={springTransition}
                     >
-                      <Card className="p-4 bg-green-500/10 border-green-500/20 flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-green-500/20 rounded-full">
-                            <Check className="w-5 h-5 text-green-500" />
+                      <Card className="p-6 bg-emerald-500/10 border-emerald-500/20 flex items-center justify-between rounded-2xl backdrop-blur-md">
+                        <div className="flex items-center space-x-4">
+                          <div className="p-3 bg-emerald-500/20 rounded-full border border-emerald-500/30">
+                            <Check className="w-6 h-6 text-emerald-500" />
                           </div>
                           <div>
-                            <p className="font-medium text-green-500">{t('status.completed')}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="font-medium text-emerald-400 text-lg">{t('status.completed')}</p>
+                            <p className="text-sm text-emerald-500/70">
                               {options.dimensions?.width} x {options.dimensions?.height} • {options.format.split('/')[1].toUpperCase()}
                             </p>
                           </div>
                         </div>
-                        <Button asChild className="bg-green-600 hover:bg-green-700 text-white rounded-full">
+                        <Button asChild className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full px-6 shadow-lg shadow-emerald-900/20">
                           <a href={processedImageUrl} download={`converted-image.${options.format.split('/')[1]}`}>
                             <Download className="w-4 h-4 mr-2" />
                             {t('actions.download')}
@@ -273,25 +278,27 @@ export default function ImageLabPage() {
               </div>
 
               <div className="space-y-4">
-                <Card className="p-6 space-y-6 backdrop-blur-2xl bg-white/5 border-white/10 h-full">
-                  <div className="flex items-center space-x-2 text-foreground/80 pb-4 border-b border-white/10">
-                    <Settings2 className="w-5 h-5" />
-                    <h2 className="font-medium">{t('controls.convertFormat')}</h2>
+                <Card className="p-8 space-y-8 backdrop-blur-xl bg-black/40 border-white/10 h-full rounded-3xl shadow-xl">
+                  <div className="flex items-center space-x-3 text-white pb-6 border-b border-white/10">
+                    <div className="p-2 bg-white/5 rounded-lg border border-white/10">
+                       <Settings2 className="w-5 h-5" />
+                    </div>
+                    <h2 className="font-semibold text-lg tracking-wide">{t('controls.convertFormat')}</h2>
                   </div>
 
-                  <div className="space-y-3">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <div className="space-y-4">
+                    <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest pl-1">
                       Format
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-3">
                       {(['image/jpeg', 'image/png', 'image/webp'] as const).map((fmt) => (
                         <Button
                           key={fmt}
                           variant={options.format === fmt ? "default" : "outline"}
                           onClick={() => setOptions(prev => ({ ...prev, format: fmt }))}
                           className={`
-                            text-xs h-9 transition-all duration-300
-                            ${options.format === fmt ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'bg-transparent border-white/10 hover:bg-white/5'}
+                            h-10 text-xs font-medium transition-all duration-300 rounded-xl
+                            ${options.format === fmt ? 'bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-900/20' : 'bg-white/5 border-white/10 text-neutral-400 hover:bg-white/10 hover:text-white'}
                           `}
                         >
                           {fmt.split('/')[1].toUpperCase()}
@@ -301,12 +308,12 @@ export default function ImageLabPage() {
                   </div>
 
                   {(options.format === 'image/jpeg' || options.format === 'image/webp') && (
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    <div className="space-y-5">
+                      <div className="flex justify-between items-center pl-1">
+                        <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest">
                           {t('controls.quality')}
                         </label>
-                        <span className="text-xs font-mono bg-white/10 px-2 py-0.5 rounded">
+                        <span className="text-xs font-mono bg-white/10 px-2 py-1 rounded-md text-white/80">
                           {Math.round(options.quality * 100)}%
                         </span>
                       </div>
@@ -316,60 +323,63 @@ export default function ImageLabPage() {
                         max={1.0}
                         step={0.05}
                         onValueChange={([val]) => setOptions(prev => ({ ...prev, quality: val }))}
-                        className="py-2"
+                        className="py-2 cursor-pointer"
                       />
                     </div>
                   )}
 
                   <Separator className="bg-white/10" />
 
-                  <div className="space-y-4">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <div className="space-y-5">
+                    <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest pl-1">
                       Resize
                     </label>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] text-muted-foreground">{t('controls.width')}</label>
+                      <div className="space-y-2">
+                        <label className="text-[10px] text-neutral-400 pl-1">{t('controls.width')}</label>
                         <Input
                           type="number"
                           value={options.dimensions?.width || ''}
                           onChange={(e) => handleDimensionChange('width', e.target.value)}
-                          className="bg-black/20 border-white/10 h-9 text-sm font-mono"
+                          className="bg-black/30 border-white/10 h-10 text-sm font-mono text-white focus:border-blue-500/50 focus:ring-blue-500/20 rounded-xl"
                         />
                       </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] text-muted-foreground">{t('controls.height')}</label>
+                      <div className="space-y-2">
+                        <label className="text-[10px] text-neutral-400 pl-1">{t('controls.height')}</label>
                         <Input
                           type="number"
                           value={options.dimensions?.height || ''}
                           onChange={(e) => handleDimensionChange('height', e.target.value)}
-                          className="bg-black/20 border-white/10 h-9 text-sm font-mono"
+                          className="bg-black/30 border-white/10 h-10 text-sm font-mono text-white focus:border-blue-500/50 focus:ring-blue-500/20 rounded-xl"
                         />
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setOptions(prev => ({ ...prev, shouldMaintainAspectRatio: !prev.shouldMaintainAspectRatio }))}>
-                      <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${options.shouldMaintainAspectRatio ? 'bg-primary border-primary' : 'border-muted-foreground'}`}>
-                        {options.shouldMaintainAspectRatio && <Check className="w-3 h-3 text-primary-foreground" />}
+                    <div
+                      className="flex items-center space-x-3 cursor-pointer group p-2 -ml-2 rounded-lg hover:bg-white/5 transition-colors"
+                      onClick={() => setOptions(prev => ({ ...prev, shouldMaintainAspectRatio: !prev.shouldMaintainAspectRatio }))}
+                    >
+                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-300 ${options.shouldMaintainAspectRatio ? 'bg-blue-600 border-blue-600' : 'border-neutral-600 group-hover:border-neutral-400'}`}>
+                        {options.shouldMaintainAspectRatio && <Check className="w-3.5 h-3.5 text-white" />}
                       </div>
-                      <span className="text-xs text-muted-foreground select-none">{t('controls.maintainAspectRatio')}</span>
+                      <span className="text-sm text-neutral-400 group-hover:text-white transition-colors select-none">{t('controls.maintainAspectRatio')}</span>
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-auto">
+                  <div className="pt-6 mt-auto">
                     <Button
-                      className="w-full h-12 text-base font-medium rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full h-14 text-base font-semibold rounded-2xl shadow-xl shadow-blue-900/20 transition-all hover:scale-[1.02] active:scale-[0.98] bg-white text-black hover:bg-white/90"
                       onClick={performImageConversion}
                       disabled={isProcessing}
                     >
                       {isProcessing ? (
                         <>
-                          <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                          <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
                           {t('status.processing')}
                         </>
                       ) : (
                         <>
-                          <RefreshCw className="w-5 h-5 mr-2" />
+                          <RefreshCw className="w-5 h-5 mr-3" />
                           {t('actions.convert')}
                         </>
                       )}
