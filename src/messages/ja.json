@@ -12,6 +12,31 @@
       "ai": "ローカルAI"
     }
   },
+  "ImageLab": {
+    "title": "画像ラボ",
+    "description": "サーバーにアップロードせず、ブラウザ内で完結する画像処理。",
+    "dropzone": {
+      "idle": "ここに画像をドロップ",
+      "active": "画像をリリースして追加",
+      "subtext": "またはクリックしてファイルを選択 (JPEG, PNG, WebP)"
+    },
+    "controls": {
+      "convertFormat": "変換フォーマット",
+      "quality": "品質",
+      "width": "幅 (px)",
+      "height": "高さ (px)",
+      "maintainAspectRatio": "アスペクト比を維持"
+    },
+    "actions": {
+      "convert": "変換を実行",
+      "download": "ダウンロード",
+      "reset": "リセット"
+    },
+    "status": {
+      "processing": "処理中...",
+      "completed": "変換完了"
+    }
+  },
   "Changelog": {
     "title": "更新履歴",
     "subtitle": "Lumina Studioの進化の軌跡。",
