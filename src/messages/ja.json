@@ -24,6 +24,10 @@
     "PDFLab": {
       "title": "Lumina PDF Lab",
       "description": "PDFの結合・整理・最適化"
+    },
+    "AILab": {
+      "title": "Lumina AI Magic",
+      "description": "魔法のような背景削除"
     }
   },
   "ImageLab": {
@@ -95,6 +99,28 @@
     },
     "status": {
       "completed": "結合完了"
+    }
+  },
+  "AILab": {
+    "title": "AI Magic",
+    "description": "ブラウザがAIエンジンになる。瞬時に背景を削除。",
+    "dropzone": {
+      "idle": "ここに画像をドロップ",
+      "active": "画像をリリースして魔法をかける",
+      "subtext": "またはクリックして選択 (JPEG, PNG, WebP)"
+    },
+    "loading": {
+      "downloading": "AIエンジンをダウンロード中...",
+      "initializing": "ニューラルネットワークを初期化中...",
+      "processing": "魔法をかけています..."
+    },
+    "actions": {
+      "download": "PNGとして保存",
+      "reset": "別の画像を試す"
+    },
+    "status": {
+      "ready": "準備完了",
+      "completed": "完了"
     }
   },
   "Changelog": {
