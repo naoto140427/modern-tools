@@ -5,7 +5,8 @@ export const APP_MODES = {
   QR: "qr",
   YOUTUBE: "youtube",
   OCR: "ocr",
-  VIDEO: "video", // 👈 これがあるか確認！
+  VIDEO: "video",
+  AUDIO: "audio", // New Feature
   DEV: "dev",
   PRIVACY: "privacy",
 } as const;
