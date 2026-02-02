@@ -37,6 +37,29 @@
       "completed": "変換完了"
     }
   },
+  "VideoLab": {
+    "title": "動画ラボ",
+    "description": "サーバーレスで安全に。ブラウザ上で完結する動画変換。",
+    "dropzone": {
+      "idle": "ここに動画をドロップ",
+      "active": "動画をリリースして追加",
+      "subtext": "またはクリックしてファイルを選択 (MP4, WebM, MOV)"
+    },
+    "controls": {
+      "outputFormat": "出力フォーマット",
+      "convert": "変換を開始"
+    },
+    "status": {
+      "loading": "FFmpegをロード中...",
+      "processing": "変換処理中...",
+      "completed": "変換完了",
+      "error": "エラー"
+    },
+    "actions": {
+      "download": "ダウンロード",
+      "reset": "リセット"
+    }
+  },
   "Changelog": {
     "title": "更新履歴",
     "subtitle": "Lumina Studioの進化の軌跡。",
