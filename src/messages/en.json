@@ -11,5 +11,22 @@
       "traffic": "Saved Traffic",
       "ai": "Local AI"
     }
+  },
+  "Changelog": {
+    "title": "Changelog",
+    "subtitle": "The evolution of Lumina Studio.",
+    "backButton": "Back to Home",
+    "versions": {
+      "v1_1_0": {
+        "date": "2026-02-02",
+        "title": "Audio Tools UI Refresh",
+        "description": "Revamped the audio editing interface for more intuitive operation. Improved waveform visualization and added instant preview for effect application."
+      },
+      "v1_0_0": {
+        "date": "2026-01-01",
+        "title": "Lumina Studio Release",
+        "description": "Released the all-in-one utility for creators. Image conversion, PDF merging, QR generation, and more—all entirely browser-based."
+      }
+    }
   }
 }
