@@ -12,6 +12,16 @@
       "ai": "ローカルAI"
     }
   },
+  "Dashboard": {
+    "ImageLab": {
+      "title": "Lumina Image Lab",
+      "description": "画像の変換・圧縮・編集"
+    },
+    "VideoLab": {
+      "title": "Lumina Video Lab",
+      "description": "動画のフォーマット変換・処理"
+    }
+  },
   "ImageLab": {
     "title": "画像ラボ",
     "description": "サーバーにアップロードせず、ブラウザ内で完結する画像処理。",
