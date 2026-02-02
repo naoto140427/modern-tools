@@ -20,6 +20,10 @@
     "VideoLab": {
       "title": "Lumina Video Lab",
       "description": "動画のフォーマット変換・処理"
+    },
+    "PDFLab": {
+      "title": "Lumina PDF Lab",
+      "description": "PDFの結合・整理・最適化"
     }
   },
   "ImageLab": {
@@ -68,6 +72,29 @@
     "actions": {
       "download": "ダウンロード",
       "reset": "リセット"
+    }
+  },
+  "PDFLab": {
+    "title": "PDFラボ",
+    "description": "セキュアに、スマートに。ブラウザで完結するPDF編集。",
+    "dropzone": {
+      "idle": "ここにPDFをドロップ",
+      "active": "PDFをリリースして追加",
+      "subtext": "またはクリックしてファイルを選択 (複数選択可)"
+    },
+    "fileList": {
+      "empty": "ファイルが選択されていません",
+      "count": "{count} ファイル",
+      "dragToReorder": "ドラッグして並び替え"
+    },
+    "actions": {
+      "merge": "PDFを結合",
+      "merging": "結合中...",
+      "download": "結合したPDFをダウンロード",
+      "clear": "すべて削除"
+    },
+    "status": {
+      "completed": "結合完了"
     }
   },
   "Changelog": {
