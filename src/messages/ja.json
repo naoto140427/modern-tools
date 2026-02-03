@@ -36,6 +36,14 @@
     "QRLab": {
       "title": "Lumina QR Master",
       "description": "リアルタイムQR生成・カスタマイズ"
+    },
+    "TextLab": {
+      "title": "Lumina Text Lab",
+      "description": "文字数カウント・変換・生成"
+    },
+    "DevLab": {
+      "title": "Lumina Dev Lab",
+      "description": "JSON整形・Base64・パスワード"
     }
   },
   "ImageLab": {
@@ -170,6 +178,57 @@
     "actions": {
       "downloadPNG": "PNGで保存",
       "downloadSVG": "SVGで保存"
+    }
+  },
+  "TextLab": {
+    "title": "テキストラボ",
+    "description": "言葉を操るための万能デスク。カウント、変換、生成。",
+    "tabs": {
+      "counter": "カウンター",
+      "converter": "コンバーター",
+      "generator": "ジェネレーター"
+    },
+    "counter": {
+      "chars": "文字数",
+      "words": "単語数",
+      "lines": "行数",
+      "noSpace": "スペースなし"
+    },
+    "converter": {
+      "upper": "全て大文字",
+      "lower": "全て小文字",
+      "fullToHalf": "全角 → 半角",
+      "halfToFull": "半角 → 全角",
+      "copy": "コピー"
+    },
+    "generator": {
+      "sentences": "文の数",
+      "generate": "生成する",
+      "copy": "コピー"
+    }
+  },
+  "DevLab": {
+    "title": "デブラボ",
+    "description": "エンジニアのアーミーナイフ。JSON、Base64、パスワード。",
+    "tabs": {
+      "json": "JSON",
+      "base64": "Base64",
+      "password": "Password"
+    },
+    "json": {
+      "format": "整形 (Pretty Print)",
+      "minify": "圧縮 (Minify)",
+      "valid": "有効なJSONです",
+      "invalid": "無効なJSONです"
+    },
+    "base64": {
+      "encode": "エンコード",
+      "decode": "デコード"
+    },
+    "password": {
+      "length": "長さ",
+      "generate": "生成",
+      "copy": "コピー"
     }
   },
   "Changelog": {

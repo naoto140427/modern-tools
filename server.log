@@ -1,11 +1,11 @@
 
 > modern-tools@0.1.4 start
-> next start -p 3002
+> next start -p 3003
 
 ▲ Next.js 16.1.3
-- Local:         http://localhost:3002
-- Network:       http://192.168.0.2:3002
+- Local:         http://localhost:3003
+- Network:       http://192.168.0.2:3003
 
 ✓ Starting...
-✓ Ready in 1730ms
-⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3002". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+✓ Ready in 1501ms
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3003". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
