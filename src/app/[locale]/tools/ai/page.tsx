@@ -120,8 +120,8 @@ export default function AiLabPage() {
 
         {error && (
           <div className="p-4 rounded-xl bg-red-950/30 border border-red-500/20 text-red-200 flex items-center gap-3 max-w-2xl mx-auto backdrop-blur-md">
-             <AlertCircle className="w-5 h-5 text-red-500" />
-             <p>{error}</p>
+             <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+             <p>{t('status.error')}</p>
           </div>
         )}
 

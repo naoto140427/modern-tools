@@ -9,7 +9,10 @@ env.useBrowserCache = true;
 class BackgroundRemover {
   static model: any = null;
   static processor: any = null;
-  static modelId = 'briaai/RMBG-1.4';
+  // NOTE: Xenova/modnet is a safe, public model that does not require an API key.
+  // briaai/RMBG-1.4 is superior but may require license acceptance on HF (gated), causing 401 errors without a token.
+  // To ensure "Zero Config" for all users, we switch to Xenova/modnet.
+  static modelId = 'Xenova/modnet';
 
   static async getInstance(progressCallback: (data: any) => void) {
     if (!this.model || !this.processor) {
