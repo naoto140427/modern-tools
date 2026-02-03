@@ -32,6 +32,10 @@
     "AudioLab": {
       "title": "Lumina Audio Lab",
       "description": "音声変換・波形ビジュアライザー"
+    },
+    "QRLab": {
+      "title": "Lumina QR Master",
+      "description": "リアルタイムQR生成・カスタマイズ"
     }
   },
   "ImageLab": {
@@ -151,6 +155,21 @@
     "actions": {
       "download": "ダウンロード",
       "reset": "リセット"
+    }
+  },
+  "QRLab": {
+    "title": "QRマスター",
+    "description": "打ち込んだ瞬間、世界への扉が開く。美しく、カスタマイズ可能なQRコード。",
+    "inputPlaceholder": "URLまたはテキストを入力...",
+    "controls": {
+      "foreground": "コードの色",
+      "background": "背景色",
+      "logo": "ロゴを追加 (オプション)",
+      "removeLogo": "ロゴを削除"
+    },
+    "actions": {
+      "downloadPNG": "PNGで保存",
+      "downloadSVG": "SVGで保存"
     }
   },
   "Changelog": {
