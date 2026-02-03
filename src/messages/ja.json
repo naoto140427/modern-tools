@@ -343,6 +343,22 @@
     "success": "リンクをコピーしました",
     "failed": "共有に失敗しました"
   },
+  "Safety": {
+    "notFound": {
+      "title": "404 - Lost in Space",
+      "desc": "このページは見つかりませんでした。宇宙の彼方へ漂流してしまったようです。",
+      "action": "ミッションコントロールへ帰還"
+    },
+    "error": {
+      "title": "システム障害発生",
+      "desc": "予期せぬエラーが発生しました。エンジニアが対応中です。",
+      "action": "システム再起動"
+    },
+    "offline": {
+      "title": "Offline Mode Active",
+      "desc": "安心してください。全てのツールはオフラインでも動作します。"
+    }
+  },
   "Changelog": {
     "title": "更新履歴",
     "subtitle": "Lumina Studioの進化の軌跡。",

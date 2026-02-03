@@ -7,6 +7,7 @@ import { BottomTabBar } from "./BottomTabBar";
 import { CommandPalette } from "./CommandPalette";
 import { FileShelf } from "./FileShelf";
 import { Toaster } from "sonner";
+import { OfflineIndicator } from "./OfflineIndicator";
 
 export function AdaptiveLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,6 +20,7 @@ export function AdaptiveLayout({ children }: { children: React.ReactNode }) {
             <BottomTabBar />
             <CommandPalette />
             <FileShelf />
+            <OfflineIndicator />
 
             {/* Notifications */}
             <Toaster position="bottom-right" theme="dark" />
