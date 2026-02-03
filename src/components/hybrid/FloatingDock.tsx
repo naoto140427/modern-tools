@@ -13,7 +13,9 @@ import {
   QrCode,
   Type,
   Code2,
-  Inbox
+  Inbox,
+  Package,
+  Video
 } from "lucide-react";
 import { useFileShelf } from "@/context/FileShelfContext";
 
@@ -38,6 +40,8 @@ export function FloatingDock() {
       <DockItem icon={<QrCode />} label="QR" href="/tools/qr" mouseX={mouseX} isActive={pathname.includes("/qr")} />
       <DockItem icon={<Type />} label="Text" href="/tools/text" mouseX={mouseX} isActive={pathname.includes("/text")} />
       <DockItem icon={<Code2 />} label="Dev" href="/tools/dev" mouseX={mouseX} isActive={pathname.includes("/dev")} />
+      <DockItem icon={<Package />} label="Archive" href="/tools/archive" mouseX={mouseX} isActive={pathname.includes("/archive")} />
+      <DockItem icon={<Video />} label="Record" href="/tools/recorder" mouseX={mouseX} isActive={pathname.includes("/recorder")} />
       <div className="w-px h-8 bg-white/10 self-center mx-1" />
       <DockButton icon={<Inbox />} label="Shelf" onClick={() => setIsOpen(true)} mouseX={mouseX} />
     </div>

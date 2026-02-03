@@ -44,6 +44,14 @@
     "DevLab": {
       "title": "Lumina Dev Lab",
       "description": "JSON整形・Base64・パスワード"
+    },
+    "ArchiveLab": {
+      "title": "Lumina Archive Lab",
+      "description": "ZIP圧縮・解凍・プレビュー"
+    },
+    "Recorder": {
+      "title": "Lumina Screen Recorder",
+      "description": "画面収録・即時プレビュー"
     }
   },
   "ImageLab": {
@@ -178,6 +186,52 @@
     "actions": {
       "downloadPNG": "PNGで保存",
       "downloadSVG": "SVGで保存"
+    }
+  },
+  "ArchiveLab": {
+    "title": "アーカイブ・ラボ",
+    "description": "ファイルの荷造りと荷解きを、エレガントに。",
+    "dropzone": {
+      "idle": "ここにZIPまたはファイルをドロップ",
+      "active": "リリースして追加",
+      "subtext": "ZIPなら解凍、その他なら圧縮します"
+    },
+    "tabs": {
+      "viewer": "解凍 (Viewer)",
+      "compressor": "圧縮 (Creator)"
+    },
+    "viewer": {
+      "empty": "ZIPファイルをドロップすると、中身が表示されます。",
+      "extractAll": "全て解凍"
+    },
+    "compressor": {
+      "fileName": "ファイル名 (拡張子不要)",
+      "addFiles": "ファイルを追加",
+      "createZip": "ZIPを作成"
+    },
+    "actions": {
+      "download": "ダウンロード",
+      "saveToShelf": "シェルフに保存"
+    }
+  },
+  "Recorder": {
+    "title": "スクリーンレコーダー",
+    "description": "あなたの画面を、そのままキャプチャ。",
+    "controls": {
+      "start": "録画開始",
+      "stop": "録画停止",
+      "mic": "マイク音声",
+      "source": "ソース選択"
+    },
+    "status": {
+      "idle": "待機中",
+      "recording": "録画中",
+      "processing": "処理中..."
+    },
+    "actions": {
+      "download": "動画を保存",
+      "saveToShelf": "シェルフに保存",
+      "new": "新規録画"
     }
   },
   "TextLab": {

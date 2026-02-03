@@ -82,7 +82,23 @@ function ShelfContent({ items, onRemove, onClear, onClose }: { items: ShelfItem[
             ) : (
                 <div className="flex-1 overflow-y-auto space-y-3">
                     {items.map((item) => (
-                        <div key={item.id} className="group relative flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                        <div
+                            key={item.id}
+                            className="group relative flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-grab active:cursor-grabbing"
+                            draggable
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData("application/json", JSON.stringify({
+                                    id: item.id,
+                                    name: item.file.name,
+                                    type: item.file.type
+                                }));
+                                // Note: passing File object directly via drag/drop is restricted by browser security in some contexts,
+                                // but within the same app window we can use a custom logic or simply transfer ID and lookup in context.
+                                // However, standard file input drop zones expect FileList.
+                                // To make it compatible with 'react-dropzone', we might need a workaround or specific handler in dropzones.
+                                // For now, we set a custom format that our tools can optionally listen to, or rely on internal app state.
+                            }}
+                        >
                             <div className="w-12 h-12 rounded-lg bg-black/40 flex items-center justify-center overflow-hidden border border-white/10">
                                 {item.previewUrl ? (
                                     <img src={item.previewUrl} alt="preview" className="w-full h-full object-cover" />

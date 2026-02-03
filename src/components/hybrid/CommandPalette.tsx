@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Command } from "cmdk";
-import { Search, Calculator, Calendar, CreditCard, Settings, User, Image as ImageIcon, Film, FileText, Sparkles, Music, QrCode, Type, Code2 } from "lucide-react";
+import { Search, Calculator, Calendar, CreditCard, Settings, User, Image as ImageIcon, Film, FileText, Sparkles, Music, QrCode, Type, Code2, Package, Video } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -52,6 +52,8 @@ export function CommandPalette() {
               <CommandItem icon={<QrCode />} onSelect={() => runCommand(() => router.push("/tools/qr"))}>QR Master</CommandItem>
               <CommandItem icon={<Type />} onSelect={() => runCommand(() => router.push("/tools/text"))}>Text Lab</CommandItem>
               <CommandItem icon={<Code2 />} onSelect={() => runCommand(() => router.push("/tools/dev"))}>Dev Lab</CommandItem>
+              <CommandItem icon={<Package />} onSelect={() => runCommand(() => router.push("/tools/archive"))}>Archive Lab</CommandItem>
+              <CommandItem icon={<Video />} onSelect={() => runCommand(() => router.push("/tools/recorder"))}>Screen Recorder</CommandItem>
             </Command.Group>
 
             <Command.Separator className="h-px bg-white/10 my-1" />

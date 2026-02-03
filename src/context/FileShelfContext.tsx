@@ -27,12 +27,25 @@ export function FileShelfProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const addItem = useCallback((file: File, source: string = "Upload") => {
+    let previewUrl: string | undefined = undefined;
+    if (file.type.startsWith("image/")) {
+      previewUrl = URL.createObjectURL(file);
+    }
+    // We could add more preview logic here if needed, but for now images are main concern.
+    // Video preview is handled by creating object URL in component if needed or here.
+    else if (file.type.startsWith("video/")) {
+        // Optional: Generate thumbnail? For now just URL for access
+        // previewUrl = URL.createObjectURL(file);
+        // Note: Creating object URL for large video might use memory, but it's fine for local shelf usually.
+        // Let's keep previewUrl for images mainly for the small icon preview.
+    }
+
     const newItem: ShelfItem = {
       id: crypto.randomUUID(),
       file,
       source,
       timestamp: Date.now(),
-      previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined
+      previewUrl
     };
 
     setItems((prev) => [newItem, ...prev]);
