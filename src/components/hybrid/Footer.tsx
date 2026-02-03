@@ -1,4 +1,4 @@
-import { Github } from "lucide-react";
+import { Github, Heart } from "lucide-react";
 
 export function Footer() {
   return (
@@ -13,7 +13,17 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center justify-center gap-6">
+          <a
+            href="#"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-xs text-neutral-400 hover:text-pink-400 hover:bg-pink-500/10 hover:border-pink-500/20 transition-all duration-300 group"
+          >
+            <Heart className="w-3.5 h-3.5 group-hover:fill-current" />
+            Support Lumina
+          </a>
+
+          <div className="h-4 w-px bg-white/10 hidden md:block" />
+
           <a href="#" className="text-sm text-neutral-500 hover:text-white transition-colors">
             Privacy Policy
           </a>

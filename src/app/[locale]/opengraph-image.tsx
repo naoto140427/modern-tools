@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'ModernTools - Focus on Creation';
+export const alt = 'Lumina Studio - Ultimate Serverless Creative Tools';
 export const size = {
   width: 1200,
   height: 630,
@@ -45,7 +45,7 @@ export default async function Image() {
             right: '-20%',
             width: '60%',
             height: '60%',
-            background: 'rgba(147, 51, 234, 0.2)', // Purple
+            background: 'rgba(236, 72, 153, 0.2)', // Pink
             filter: 'blur(100px)',
             borderRadius: '50%',
           }}
@@ -61,20 +61,14 @@ export default async function Image() {
             zIndex: 10,
           }}
         >
-          {/* アイコン風の四角 */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '80px',
-              height: '80px',
-              borderRadius: '20px',
-              border: '1px solid rgba(255,255,255,0.2)',
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #000 100%)',
               marginBottom: '20px',
               color: 'white',
-              fontSize: '40px',
+              fontSize: '60px',
             }}
           >
             ⚡️
@@ -82,7 +76,7 @@ export default async function Image() {
 
           <h1
             style={{
-              fontSize: '80px',
+              fontSize: '90px',
               fontWeight: 'bold',
               color: 'white',
               margin: 0,
@@ -90,17 +84,18 @@ export default async function Image() {
               letterSpacing: '-0.05em',
             }}
           >
-            ModernTools
+            Lumina Studio
           </h1>
 
           <p
             style={{
-              fontSize: '30px',
-              color: '#a3a3a3', // neutral-400
+              fontSize: '36px',
+              color: '#a3a3a3',
               margin: 0,
+              fontWeight: 300,
             }}
           >
-            Ultimate Workspace for Creators
+            Your Creative Studio. In the Browser.
           </p>
         </div>
 
@@ -108,14 +103,14 @@ export default async function Image() {
         <div
           style={{
             position: 'absolute',
-            bottom: '40px',
+            bottom: '60px',
             display: 'flex',
-            gap: '10px',
+            gap: '15px',
           }}
         >
-          <div style={{ padding: '5px 15px', borderRadius: '20px', border: '1px solid #333', color: '#666', fontSize: '14px' }}>WebP Converter</div>
-          <div style={{ padding: '5px 15px', borderRadius: '20px', border: '1px solid #333', color: '#666', fontSize: '14px' }}>Privacy First</div>
-          <div style={{ padding: '5px 15px', borderRadius: '20px', border: '1px solid #333', color: '#666', fontSize: '14px' }}>Local AI</div>
+          <div style={{ padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#ccc', fontSize: '16px' }}>AI Magic</div>
+          <div style={{ padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#ccc', fontSize: '16px' }}>Privacy First</div>
+          <div style={{ padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#ccc', fontSize: '16px' }}>Serverless</div>
         </div>
       </div>
     ),

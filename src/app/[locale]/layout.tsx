@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,6 +45,7 @@ export default async function RootLayout({
           <div className="relative z-10 min-h-screen flex flex-col">
              {children}
           </div>
+          <Analytics />
         </NextIntlClientProvider>
       </body>
     </html>
