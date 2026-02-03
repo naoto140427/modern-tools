@@ -231,6 +231,9 @@
       "copy": "コピー"
     }
   },
+  "CommandPalette": {
+    "placeholder": "コマンドを入力または検索..."
+  },
   "Changelog": {
     "title": "更新履歴",
     "subtitle": "Lumina Studioの進化の軌跡。",
