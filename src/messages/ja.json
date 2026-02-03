@@ -111,7 +111,9 @@
     },
     "loading": {
       "downloading": "AIエンジンをダウンロード中...",
+      "downloading_file": "モデルファイルをダウンロード中 ({percent}%)",
       "initializing": "ニューラルネットワークを初期化中...",
+      "warming_up": "AIエンジンを起動しています...",
       "processing": "魔法をかけています..."
     },
     "actions": {

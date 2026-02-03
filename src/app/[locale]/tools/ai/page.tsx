@@ -37,7 +37,6 @@ export default function AiLabPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
 
-  // 初回マウント時にモデルロード開始
   useEffect(() => {
     loadModel();
   }, [loadModel]);
@@ -70,8 +69,6 @@ export default function AiLabPage() {
       const file = acceptedFiles[0];
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
-
-      // 自動的に処理開始
       processImage(file);
     }
   }, [processImage]);
@@ -86,9 +83,15 @@ export default function AiLabPage() {
 
   const springTransition = { type: "spring" as const, stiffness: 300, damping: 30 };
 
+  // ローディングメッセージの決定
+  const getLoadingMessage = () => {
+    if (progress === 100) return t('loading.warming_up');
+    if (loadingStatus) return `${t('loading.downloading')} (${loadingStatus})`;
+    return t('loading.downloading');
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col pt-24 pb-12 px-4 sm:px-8">
-      {/* ナビゲーションバック */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -122,24 +125,32 @@ export default function AiLabPage() {
           </div>
         )}
 
-        {/* モデルロード中 */}
         {(isLoading || (!isReady && !error)) && (
            <div className="flex flex-col items-center justify-center p-24 space-y-8">
              <div className="relative">
                <div className="absolute inset-0 bg-purple-500/30 blur-xl rounded-full animate-pulse" />
                <Sparkles className="w-16 h-16 text-purple-300 relative z-10 animate-bounce" />
              </div>
-             <div className="space-y-2 text-center">
-                <p className="text-white text-lg font-medium">{loadingStatus || t('loading.initializing')}</p>
-                {progress > 0 && (
-                  <div className="w-64 h-1.5 bg-white/10 rounded-full overflow-hidden mx-auto">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                    />
-                  </div>
-                )}
+
+             <div className="w-full max-w-sm space-y-3">
+                <div className="flex justify-between items-end px-1">
+                   <span className="text-sm font-medium text-purple-200/80 truncate max-w-[200px]">
+                     {getLoadingMessage()}
+                   </span>
+                   <span className="text-xs font-mono text-purple-300">
+                     {Math.round(progress)}%
+                   </span>
+                </div>
+
+                {/* iOS-style Progress Bar */}
+                <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ ease: "linear", duration: 0.2 }}
+                  />
+                </div>
              </div>
            </div>
         )}
@@ -175,11 +186,8 @@ export default function AiLabPage() {
               >
                 <Card className="relative overflow-hidden bg-black/40 backdrop-blur-2xl border-white/10 rounded-3xl shadow-2xl min-h-[600px] flex flex-col">
 
-                  {/* ツールバー */}
                   <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-50 pointer-events-none">
-                    <div className="pointer-events-auto">
-                       {/* Left controls if needed */}
-                    </div>
+                    <div className="pointer-events-auto"></div>
                     <div className="pointer-events-auto">
                       <Button
                         variant="ghost"
@@ -192,7 +200,6 @@ export default function AiLabPage() {
                     </div>
                   </div>
 
-                  {/* メインビュー */}
                   <div className="flex-1 relative flex items-center justify-center p-8">
                     {isProcessing ? (
                       <div className="text-center space-y-6">
@@ -217,7 +224,6 @@ export default function AiLabPage() {
                     )}
                   </div>
 
-                  {/* アクションバー */}
                   {!isProcessing && resultUrl && (
                     <div className="p-6 border-t border-white/10 bg-white/5 flex justify-center">
                        <Button asChild className="h-14 px-8 text-base font-bold rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-900/40 transition-all hover:scale-105 active:scale-95">

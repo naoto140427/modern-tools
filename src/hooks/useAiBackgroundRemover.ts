@@ -36,20 +36,25 @@ export function useAiBackgroundRemover(): UseAiBackgroundRemoverReturn {
 
         switch (type) {
           case 'progress':
-            // モデルダウンロードの進捗
             if (data.status === 'progress') {
-                // data.progress は 0-100 ではなくパーセンテージ(0-100)など
-                // transformers.jsのprogress callbackは { status: 'progress', name: '...', file: '...', progress: 0-100, loaded: ..., total: ... }
-                setLoadingStatus(data.file);
-                setProgress(Math.round(data.progress || 0));
+                const percent = data.progress ? Math.round(data.progress) : 0;
+                // ファイル名を短縮して表示
+                const fileName = data.file ? data.file.split('/').pop() : 'model';
+                setLoadingStatus(fileName);
+                setProgress(percent);
             } else if (data.status === 'done') {
+                // ダウンロード完了、次のステップへ
                 setProgress(100);
+            } else if (data.status === 'initiate') {
+                setLoadingStatus(data.file);
+                setProgress(0);
             }
             break;
           case 'ready':
             setIsReady(true);
             setIsLoading(false);
             setLoadingStatus(null);
+            setProgress(100);
             break;
           case 'complete':
             setResult(data);
@@ -74,7 +79,7 @@ export function useAiBackgroundRemover(): UseAiBackgroundRemoverReturn {
   const loadModel = useCallback(() => {
     if (isReady || isLoading) return;
     setIsLoading(true);
-    setLoadingStatus('Initializing...');
+    setLoadingStatus(null);
     workerRef.current?.postMessage({ type: 'init' });
   }, [isReady, isLoading]);
 
