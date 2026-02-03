@@ -21,7 +21,7 @@ export function Header() {
             <Zap className="h-5 w-5 fill-current" />
           </div>
           <span className="text-sm font-bold tracking-tight text-white hidden sm:block">
-            ModernTools
+            Lumina Studio
           </span>
         </div>
 
