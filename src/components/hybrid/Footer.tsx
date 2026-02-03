@@ -1,4 +1,5 @@
 import { Github, Heart } from "lucide-react";
+import { Link } from "@/i18n/routing";
 
 export function Footer() {
   return (
@@ -14,22 +15,22 @@ export function Footer() {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-6">
-          <a
-            href="#"
+          <Link
+            href="/feedback"
             className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-xs text-neutral-400 hover:text-pink-400 hover:bg-pink-500/10 hover:border-pink-500/20 transition-all duration-300 group"
           >
             <Heart className="w-3.5 h-3.5 group-hover:fill-current" />
-            Support Lumina
-          </a>
+            Feedback
+          </Link>
 
           <div className="h-4 w-px bg-white/10 hidden md:block" />
 
-          <a href="#" className="text-sm text-neutral-500 hover:text-white transition-colors">
-            Privacy Policy
-          </a>
-          <a href="#" className="text-sm text-neutral-500 hover:text-white transition-colors">
-            Terms of Service
-          </a>
+          <Link href="/about" className="text-sm text-neutral-500 hover:text-white transition-colors">
+            Privacy & About
+          </Link>
+          <Link href="/settings" className="text-sm text-neutral-500 hover:text-white transition-colors">
+            Settings
+          </Link>
           <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-neutral-500 hover:text-white transition-colors">
             <Github className="w-5 h-5" />
           </a>

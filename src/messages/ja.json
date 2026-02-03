@@ -288,6 +288,61 @@
   "CommandPalette": {
     "placeholder": "コマンドを入力または検索..."
   },
+  "Feedback": {
+    "title": "フィードバック",
+    "description": "Lumina Studioは、あなたと共に進化します。",
+    "formTitle": "ご意見をお聞かせください",
+    "formDesc": "バグ報告、機能リクエスト、または単なる感想でも構いません。",
+    "actions": {
+      "github": "GitHub Issues",
+      "googleForm": "フィードバックフォーム (Google Forms)",
+      "send": "送信 (外部サイト)"
+    }
+  },
+  "About": {
+    "title": "プライバシー宣言",
+    "subtitle": "あなたのデータは、あなたのデバイスから一歩も出ません。",
+    "serverless": {
+      "title": "完全サーバーレス",
+      "desc": "画像も動画も、すべての処理はブラウザ内のWASM (WebAssembly) で行われます。"
+    },
+    "offline": {
+      "title": "オフラインファースト",
+      "desc": "PWAとしてインストールすれば、機内モードでも動作します。通信は発生しません。"
+    },
+    "openSource": {
+      "title": "透明性",
+      "desc": "ソースコードは公開される予定です。ブラックボックスはありません。"
+    }
+  },
+  "Settings": {
+    "title": "設定",
+    "description": "Lumina Studioをあなた好みに。",
+    "theme": {
+      "title": "テーマ",
+      "desc": "外観モードを切り替えます。",
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム"
+    },
+    "data": {
+      "title": "データ管理",
+      "desc": "アプリの一時データやキャッシュを削除します。",
+      "clear": "アプリをリセット",
+      "cleared": "リセット完了"
+    },
+    "language": {
+      "title": "言語",
+      "desc": "表示言語を変更します。",
+      "ja": "日本語",
+      "en": "English"
+    }
+  },
+  "Share": {
+    "label": "共有",
+    "success": "リンクをコピーしました",
+    "failed": "共有に失敗しました"
+  },
   "Changelog": {
     "title": "更新履歴",
     "subtitle": "Lumina Studioの進化の軌跡。",
