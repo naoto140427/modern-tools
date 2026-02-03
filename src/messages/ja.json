@@ -28,6 +28,10 @@
     "AILab": {
       "title": "Lumina AI Magic",
       "description": "魔法のような背景削除"
+    },
+    "AudioLab": {
+      "title": "Lumina Audio Lab",
+      "description": "音声変換・波形ビジュアライザー"
     }
   },
   "ImageLab": {
@@ -124,6 +128,29 @@
       "ready": "準備完了",
       "completed": "完了",
       "error": "エラー: モデルのダウンロードに失敗しました。ネットワークを確認してください。"
+    }
+  },
+  "AudioLab": {
+    "title": "オーディオラボ",
+    "description": "波形を見て、聴いて、変換する。次世代のオーディオツール。",
+    "dropzone": {
+      "idle": "ここに音声をドロップ",
+      "active": "音声をリリースして追加",
+      "subtext": "またはクリックして選択 (MP3, WAV, M4A, OGG)"
+    },
+    "controls": {
+      "outputFormat": "出力フォーマット",
+      "convert": "変換を開始"
+    },
+    "status": {
+      "loading": "FFmpegをロード中...",
+      "processing": "変換処理中...",
+      "completed": "変換完了",
+      "error": "エラーが発生しました"
+    },
+    "actions": {
+      "download": "ダウンロード",
+      "reset": "リセット"
     }
   },
   "Changelog": {
