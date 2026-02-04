@@ -18,3 +18,5 @@ https://nextjs.org/telemetry
  GET /en/privacy 200 in 10.5s (compile: 9.3s, proxy.ts: 184ms, render: 988ms)
 ○ Compiling /[locale] ...
  GET /grid.svg 200 in 4.5s (compile: 4.3s, render: 188ms)
+✓ Compiled in 248ms
+✓ Compiled in 348ms

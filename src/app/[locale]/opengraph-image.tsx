@@ -1,121 +1,84 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-
-export const alt = 'Lumina Studio - Ultimate Serverless Creative Tools';
-export const size = {
-  width: 1200,
-  height: 630,
-};
+export const alt = 'Lumina Studio';
+export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 export default async function Image() {
+  // 本来は引数からタイトル等を取得するが、まずはデフォルトのBrand Imageを作成
   return new ImageResponse(
     (
       <div
         style={{
-          background: 'black',
-          width: '100%',
           height: '100%',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: 'sans-serif',
-          position: 'relative',
+          backgroundColor: '#030712', // Dark background
+          backgroundImage: 'radial-gradient(circle at 50% 0%, #1e1b4b 0%, #030712 50%)',
         }}
       >
-        {/* 背景の装飾（オーロラ） */}
+        {/* Glow Effect Background */}
         <div
           style={{
             position: 'absolute',
-            top: '-20%',
-            left: '-20%',
-            width: '60%',
-            height: '60%',
-            background: 'rgba(59, 130, 246, 0.2)', // Blue
-            filter: 'blur(100px)',
-            borderRadius: '50%',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-20%',
-            right: '-20%',
-            width: '60%',
-            height: '60%',
-            background: 'rgba(236, 72, 153, 0.2)', // Pink
-            filter: 'blur(100px)',
-            borderRadius: '50%',
+            top: '-200px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '800px',
+            height: '800px',
+            background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 70%)',
+            filter: 'blur(40px)',
           }}
         />
 
-        {/* メインテキスト */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '20px',
-            zIndex: 10,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '20px',
-              color: 'white',
-              fontSize: '60px',
-            }}
-          >
-            ⚡️
-          </div>
-
-          <h1
-            style={{
-              fontSize: '90px',
-              fontWeight: 'bold',
-              color: 'white',
-              margin: 0,
-              lineHeight: 1,
-              letterSpacing: '-0.05em',
-            }}
-          >
-            Lumina Studio
-          </h1>
-
-          <p
-            style={{
-              fontSize: '36px',
-              color: '#a3a3a3',
-              margin: 0,
-              fontWeight: 300,
-            }}
-          >
-            Your Creative Studio. In the Browser.
-          </p>
+        {/* Logo Representation */}
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
+           {/* SVGの簡易版をここに埋め込む */}
+           <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
+             <rect x="10" y="10" width="80" height="80" rx="20" fill="url(#grad)" fillOpacity="0.2" />
+             <circle cx="50" cy="50" r="25" fill="url(#grad)" />
+             <path d="M50 20 L55 45 L80 50 L55 55 L50 80 L45 55 L20 50 L45 45 Z" fill="white" />
+             <defs>
+               <linearGradient id="grad" x1="0" y1="0" x2="100" y2="100">
+                 <stop offset="0%" stopColor="#3B82F6" />
+                 <stop offset="100%" stopColor="#EC4899" />
+               </linearGradient>
+             </defs>
+           </svg>
         </div>
 
-        {/* UIっぽい装飾 */}
+        {/* Brand Name */}
         <div
           style={{
-            position: 'absolute',
-            bottom: '60px',
-            display: 'flex',
-            gap: '15px',
+            fontSize: 80,
+            fontWeight: 800,
+            background: 'linear-gradient(to bottom right, #fff 30%, #aaa 100%)',
+            backgroundClip: 'text',
+            color: 'transparent',
+            letterSpacing: '-0.02em',
+            fontFamily: 'sans-serif',
           }}
         >
-          <div style={{ padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#ccc', fontSize: '16px' }}>AI Magic</div>
-          <div style={{ padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#ccc', fontSize: '16px' }}>Privacy First</div>
-          <div style={{ padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#ccc', fontSize: '16px' }}>Serverless</div>
+          Lumina Studio
+        </div>
+
+        {/* Tagline */}
+        <div
+          style={{
+            fontSize: 32,
+            color: '#94a3b8',
+            marginTop: '20px',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          Privacy-First Browser Tools
         </div>
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size }
   );
 }
