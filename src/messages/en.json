@@ -12,6 +12,10 @@
       "ai": "Local AI"
     }
   },
+  "Blog": {
+    "title": "Lumina Blog",
+    "subtitle": "Tips, updates, and technical deep dives."
+  },
   "Changelog": {
     "title": "Changelog",
     "subtitle": "The evolution of Lumina Studio.",

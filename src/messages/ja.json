@@ -359,6 +359,10 @@
       "desc": "安心してください。全てのツールはオフラインでも動作します。"
     }
   },
+  "Blog": {
+    "title": "Lumina Blog",
+    "subtitle": "ツール活用のヒント、アップデート情報、技術解説をお届けします。"
+  },
   "Changelog": {
     "title": "更新履歴",
     "subtitle": "Lumina Studioの進化の軌跡。",
