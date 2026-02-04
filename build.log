@@ -1,0 +1,48 @@
+
+> modern-tools@0.1.4 build
+> next build
+
+▲ Next.js 16.1.3 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 21.2s
+  Running TypeScript ...
+  Collecting page data using 3 workers ...
+⚠ Using edge runtime on a page currently disables static generation for that page
+  Generating static pages using 3 workers (0/5) ...
+  Generating static pages using 3 workers (1/5)
+  Generating static pages using 3 workers (2/5)
+  Generating static pages using 3 workers (3/5)
+✓ Generating static pages using 3 workers (5/5) in 202.9ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/about
+├ ƒ /[locale]/blog
+├ ƒ /[locale]/blog/[slug]
+├ ƒ /[locale]/changelog
+├ ƒ /[locale]/docs
+├ ƒ /[locale]/feedback
+├ ƒ /[locale]/opengraph-image
+├ ƒ /[locale]/settings
+├ ƒ /[locale]/tools/ai
+├ ƒ /[locale]/tools/archive
+├ ƒ /[locale]/tools/audio
+├ ƒ /[locale]/tools/dev
+├ ƒ /[locale]/tools/image
+├ ƒ /[locale]/tools/pdf
+├ ƒ /[locale]/tools/qr
+├ ƒ /[locale]/tools/recorder
+├ ƒ /[locale]/tools/text
+├ ƒ /[locale]/tools/video
+├ ○ /robots.txt
+└ ○ /sitemap.xml
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
