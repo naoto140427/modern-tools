@@ -24,6 +24,29 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Lumina Studio",
   },
+  alternates: {
+    canonical: 'https://lumina-tools.com',
+    languages: {
+      'en': 'https://lumina-tools.com/en',
+      'ja': 'https://lumina-tools.com/ja',
+    },
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Lumina Studio",
+  "url": "https://lumina-tools.com",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": "Image Converter, Video Editor, PDF Tools, AI Background Remover, Offline Capable",
+  "description": "Privacy-first browser-based tools. No server uploads. Works offline."
 };
 
 export const viewport: Viewport = {
@@ -63,6 +86,10 @@ export default async function RootLayout({
             </div>
           </AdaptiveLayout>
           <Analytics />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
         </NextIntlClientProvider>
       </body>
     </html>
