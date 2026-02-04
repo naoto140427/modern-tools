@@ -28,8 +28,8 @@ export function Footer() {
           <Link href="/about" className="text-sm text-neutral-500 hover:text-white transition-colors">
             Privacy & About
           </Link>
-          <Link href="/blog" className="text-sm text-neutral-500 hover:text-white transition-colors">
-            Blog
+          <Link href="/newsroom" className="text-sm text-neutral-500 hover:text-white transition-colors">
+            Newsroom
           </Link>
           <Link href="/settings" className="text-sm text-neutral-500 hover:text-white transition-colors">
             Settings

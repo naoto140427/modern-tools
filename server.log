@@ -20,3 +20,8 @@ https://nextjs.org/telemetry
 ○ Compiling /_not-found/page ...
  GET /grid.svg 200 in 4.0s (compile: 3.9s, render: 160ms)
  GET /ja/blog/convert-heic-to-jpg 200 in 1882ms (compile: 1800ms, proxy.ts: 11ms, render: 72ms)
+○ Compiling /[locale]/newsroom ...
+ GET /ja/newsroom 200 in 10.7s (compile: 9.8s, proxy.ts: 78ms, render: 849ms)
+ GET /grid.svg 200 in 1443ms (compile: 707ms, render: 735ms)
+ GET /ja/newsroom/launch-lumina-studio 200 in 3.5s (compile: 3.3s, proxy.ts: 31ms, render: 83ms)
+✓ Compiled in 185ms
