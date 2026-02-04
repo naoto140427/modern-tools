@@ -13,13 +13,15 @@ You can learn more, including how to opt-out if you'd not like to participate in
 https://nextjs.org/telemetry
 
 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
-✓ Ready in 2.8s
+✓ Ready in 2.6s
 ○ Compiling /[locale]/blog ...
- GET /ja/blog 200 in 8.9s (compile: 7.3s, proxy.ts: 126ms, render: 1547ms)
-○ Compiling /[locale] ...
- GET /grid.svg 200 in 6.8s (compile: 6.6s, render: 193ms)
- GET /ja/blog/how-to-use-image-lab 200 in 2.4s (compile: 2.3s, proxy.ts: 13ms, render: 78ms)
- GET /ja/blog 200 in 230ms (compile: 59ms, proxy.ts: 9ms, render: 161ms)
- GET /grid.svg 200 in 347ms (compile: 54ms, render: 293ms)
- GET /ja/blog/how-to-use-image-lab 200 in 313ms (compile: 68ms, proxy.ts: 11ms, render: 234ms)
-✓ Compiled in 2.7s
+ GET /ja/blog 200 in 10.2s (compile: 8.9s, proxy.ts: 170ms, render: 1112ms)
+ GET /blog/heic-converter.jpg 404 in 2.3s (compile: 1960ms, render: 368ms)
+○ Compiling /_not-found/page ...
+ GET /grid.svg 200 in 4.0s (compile: 3.9s, render: 160ms)
+ GET /ja/blog/convert-heic-to-jpg 200 in 1882ms (compile: 1800ms, proxy.ts: 11ms, render: 72ms)
+○ Compiling /[locale]/newsroom ...
+ GET /ja/newsroom 200 in 10.7s (compile: 9.8s, proxy.ts: 78ms, render: 849ms)
+ GET /grid.svg 200 in 1443ms (compile: 707ms, render: 735ms)
+ GET /ja/newsroom/launch-lumina-studio 200 in 3.5s (compile: 3.3s, proxy.ts: 31ms, render: 83ms)
+✓ Compiled in 185ms

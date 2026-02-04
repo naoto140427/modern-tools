@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Link, usePathname } from "@/i18n/routing";
-import { Home, Grid, Inbox, Settings } from "lucide-react";
+import { Home, Grid, Inbox, Settings, Newspaper } from "lucide-react";
 import { useFileShelf } from "@/context/FileShelfContext";
 
 export function BottomTabBar() {
@@ -26,10 +26,10 @@ export function BottomTabBar() {
             onClick={vibrate}
         />
         <TabItem
-            icon={<Grid />}
-            label="Tools"
-            href="/#tools"
-            isActive={pathname.startsWith("/tools")}
+            icon={<Newspaper />}
+            label="Newsroom"
+            href="/newsroom"
+            isActive={pathname.startsWith("/newsroom")}
             onClick={vibrate}
         />
         <button
@@ -44,8 +44,8 @@ export function BottomTabBar() {
         <TabItem
             icon={<Settings />}
             label="Settings"
-            href="/changelog"
-            isActive={pathname === "/changelog"}
+            href="/settings"
+            isActive={pathname === "/settings"}
             onClick={vibrate}
         />
       </div>
