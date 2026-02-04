@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version || "1.0.0",
   },
+  // AIモデルやWASMの扱いに関する設定
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "sharp$": false,
+      "onnxruntime-node$": false,
+    };
+    return config;
+  },
   // 👇 ここが重要！動画編集AIをブラウザで動かすためのセキュリティ解除設定
   async headers() {
     return [

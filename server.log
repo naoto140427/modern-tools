@@ -1,0 +1,10 @@
+
+> modern-tools@0.1.4 start
+> next start -p 3007
+
+▲ Next.js 16.1.3
+- Local:         http://localhost:3007
+- Network:       http://192.168.0.2:3007
+
+✓ Starting...
+✓ Ready in 1675ms
