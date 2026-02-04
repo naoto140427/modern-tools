@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import { Metadata } from "next";
+import React from "react";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -59,7 +60,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             case "paragraph":
               return <p key={i} className="text-lg">{block.content}</p>;
             case "heading":
-              const HeadingTag = `h${block.level}` as keyof JSX.IntrinsicElements;
+              const HeadingTag = `h${block.level}` as React.ElementType;
               // Simple mapping for sizing
               const sizeClass = block.level === 1 ? "text-3xl" : block.level === 2 ? "text-2xl mt-12 mb-4 text-white font-semibold" : "text-xl mt-8 mb-3 text-white font-medium";
               return <HeadingTag key={i} className={sizeClass}>{block.content}</HeadingTag>;

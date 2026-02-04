@@ -22,3 +22,4 @@ https://nextjs.org/telemetry
  GET /ja/blog 200 in 230ms (compile: 59ms, proxy.ts: 9ms, render: 161ms)
  GET /grid.svg 200 in 347ms (compile: 54ms, render: 293ms)
  GET /ja/blog/how-to-use-image-lab 200 in 313ms (compile: 68ms, proxy.ts: 11ms, render: 234ms)
+✓ Compiled in 2.7s
