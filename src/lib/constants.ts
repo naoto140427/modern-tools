@@ -6,7 +6,7 @@ export const APP_MODES = {
   YOUTUBE: "youtube",
   OCR: "ocr",
   VIDEO: "video",
-  AUDIO: "audio", // New Feature
+  AUDIO: "audio",
   DEV: "dev",
   PRIVACY: "privacy",
 } as const;
@@ -20,3 +20,5 @@ export const OUTPUT_FORMATS = {
 } as const;
 
 export type OutputFormat = (typeof OUTPUT_FORMATS)[keyof typeof OUTPUT_FORMATS];
+
+export const NEXT_PUBLIC_APP_URL = "https://lumina-tools.com";

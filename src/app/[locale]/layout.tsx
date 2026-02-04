@@ -9,9 +9,16 @@ import { AdaptiveLayout } from "@/components/hybrid/AdaptiveLayout";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Lumina Studio - Ultimate Serverless Creative Tools",
-  description: "Convert images, videos, and PDFs entirely in your browser. No upload, privacy-focused, and free.",
+  metadataBase: new URL("https://lumina-tools.com"),
+  title: {
+    default: "Lumina Studio | Privacy-First Browser Tools",
+    template: "%s | Lumina Studio",
+  },
+  description: "Secure, serverless tools for image, video, PDF, and AI processing. 100% privacy-focused, running entirely in your browser.",
   keywords: ["image converter", "video compressor", "pdf merge", "serverless", "wasm", "privacy"],
+  verification: {
+    google: "GOOGLE_VERIFICATION_CODE_HERE",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
