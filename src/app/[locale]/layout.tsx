@@ -4,6 +4,7 @@ import "../globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AdaptiveLayout } from "@/components/hybrid/AdaptiveLayout";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -86,6 +87,7 @@ export default async function RootLayout({
             </div>
           </AdaptiveLayout>
           <Analytics />
+          <SpeedInsights />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
