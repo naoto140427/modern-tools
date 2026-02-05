@@ -32,6 +32,10 @@ export const metadata: Metadata = {
       'ja': 'https://lumina-tools.com/ja',
     },
   },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-icon.png',
+  },
 };
 
 const jsonLd = {
