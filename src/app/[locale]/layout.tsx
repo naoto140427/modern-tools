@@ -26,10 +26,10 @@ export const metadata: Metadata = {
     title: "Lumina Studio",
   },
   alternates: {
-    canonical: 'https://lumina-tools.com',
+    canonical: './',
     languages: {
-      'en': 'https://lumina-tools.com/en',
-      'ja': 'https://lumina-tools.com/ja',
+      'en': '/en',
+      'ja': '/ja',
     },
   },
   icons: {
