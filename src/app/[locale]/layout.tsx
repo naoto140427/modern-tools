@@ -27,10 +27,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: './',
-    languages: {
-      'en': '/en',
-      'ja': '/ja',
-    },
   },
   icons: {
     icon: '/icon.svg',
